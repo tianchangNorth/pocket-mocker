@@ -635,7 +635,7 @@
     border-color: #cbd5e1;
   }
 
-  /* 空状态 */
+  /* Empty state */
   .empty-state {
     text-align: center;
     padding: 32px 20px;
@@ -723,7 +723,7 @@
     gap: 8px;
   }
 
-  /* 工具栏（延迟滑块 + 状态码） */
+  /* Toolbar (delay slider + status code) */
   .card-toolbar {
     padding: 8px 12px;
     border-bottom: 1px solid rgba(0,0,0,0.04);
@@ -811,7 +811,7 @@
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
   }
 
-  /* Tabs 样式 */
+  /* Tabs styles */
   .tabs {
     display: flex;
     gap: 2px;
@@ -842,7 +842,7 @@
     background: transparent;
   }
 
-  /* Network Logs 样式 */
+  /* Network Logs styles */
   .network-logs {
     display: flex;
     flex-direction: column;
@@ -895,7 +895,7 @@
     font-size: 11px;
   }
 
-  /* 响应式设计 */
+  /* Responsive design */
   @media (max-width: 640px) {
     .container {
       width: calc(100vw - 32px);

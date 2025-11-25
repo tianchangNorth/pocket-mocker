@@ -1,12 +1,11 @@
 // vite-plugin-pocket-mock.ts
-import fs from 'fs';
-import path from 'path';
-import type { Plugin } from 'vite';
+const fs = require('fs');
+const path = require('path');
 
 // We store configuration in this file in the project root directory
 const CONFIG_FILE_NAME = 'pocket-mock.json';
 
-export default function pocketMockPlugin(): Plugin {
+module.exports = function pocketMockPlugin() {
   return {
     name: 'vite-plugin-pocket-mock',
 
