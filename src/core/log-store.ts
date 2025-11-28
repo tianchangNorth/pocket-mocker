@@ -23,6 +23,7 @@ function createLogStore() {
         return newLogs.slice(0, 50);
       });
     },
+    remove: (id: string) => update(logs => logs.filter(l => l.id !== id)),
     clear: () => update(() => [])
   };
 }

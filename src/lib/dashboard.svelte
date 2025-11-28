@@ -27,6 +27,23 @@
   // Main tab status
   let activeMainTab: 'rules' | 'network' = 'rules';
 
+  // Network Panel State
+  let networkFilter = "";
+  let networkTypeFilter: 'all' | 'mock' | 'real' = 'all';
+  let expandedLogId: string | null = null;
+
+  $: filteredLogs = $requestLogs.filter(log => {
+    const matchText = log.url.toLowerCase().includes(networkFilter.toLowerCase()) || log.method.toLowerCase().includes(networkFilter.toLowerCase());
+    const matchType = networkTypeFilter === 'all' 
+      ? true 
+      : networkTypeFilter === 'mock' ? log.isMock : !log.isMock;
+    return matchText && matchType;
+  });
+
+  function toggleLogDetails(id: string) {
+    expandedLogId = expandedLogId === id ? null : id;
+  }
+
   // New rule status
   let showAddPanel = false;
   let newRuleUrl = "";
@@ -460,31 +477,71 @@
           {/each}
         {/if}
       {:else if activeMainTab === 'network'}
+        <div class="network-toolbar">
+          <div class="search-box">
+            <Input placeholder="Filter URL..." bind:value={networkFilter} />
+          </div>
+          <div class="type-filter">
+            <Select 
+              options={['all', 'mock', 'real']} 
+              bind:value={networkTypeFilter} 
+            />
+          </div>
+          <Button icon size="sm" on:click={() => requestLogs.clear()}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+          </Button>
+        </div>
+
         <div class="network-logs">
-          {#if $requestLogs.length === 0}
+          {#if filteredLogs.length === 0}
             <div class="empty-state">
-              <p>No request records</p>
+              <p>No logs found</p>
             </div>
           {:else}
-            {#each $requestLogs as log (log.id)}
-              <div class="log-item" class:is-mock={log.isMock}>
+            {#each filteredLogs as log (log.id)}
+              <!-- svelte-ignore a11y-click-events-have-key-events -->
+              <!-- svelte-ignore a11y-no-static-element-interactions -->
+              <div 
+                class="log-item" 
+                class:is-mock={log.isMock}
+                class:expanded={expandedLogId === log.id}
+                on:click={() => toggleLogDetails(log.id)}
+              >
                 <div class="log-header">
                   <span class="status-badge" class:success={log.status >= 200 && log.status < 300} class:error={log.status >= 400}>{log.status}</span>
                   <span class="method-badge">{log.method}</span>
                   <span class="log-url" title={log.url}>{log.url}</span>
-                  {#if !log.isMock}
-                    <button class="mock-it-btn" title="Mock this request" on:click={() => createRuleFromLog(log)}>
+                  <div class="log-actions" on:click|stopPropagation>
+                    {#if !log.isMock}
+                      <button class="action-btn mock-btn" title="Mock this request" on:click={() => createRuleFromLog(log)}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                      </button>
+                    {/if}
+                    <button class="action-btn del-btn" title="Delete Log" on:click={() => requestLogs.remove(log.id)}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 5v14M5 12h14"/>
+                        <path d="M18 6L6 18M6 6l12 12"/>
                       </svg>
                     </button>
-                  {/if}
+                  </div>
                 </div>
                 <div class="log-meta">
                   <span class="duration">{log.duration}ms</span>
                   <span class="source-badge">{log.isMock ? 'MOCK' : 'REAL'}</span>
                   <span class="time">{new Date(log.timestamp).toLocaleTimeString()}</span>
                 </div>
+                
+                {#if expandedLogId === log.id}
+                  <!-- svelte-ignore a11y-click-events-have-key-events -->
+                  <!-- svelte-ignore a11y-no-static-element-interactions -->
+                  <div class="log-details" on:click|stopPropagation>
+                    <div class="detail-label">Response Body:</div>
+                    <pre class="detail-body">{log.responseBody || '(Empty)'}</pre>
+                  </div>
+                {/if}
               </div>
             {/each}
           {/if}
@@ -865,11 +922,29 @@
   .method.DELETE { background: rgba(220, 38, 38, 0.15); color: #ef4444; }
   /* Adjust method colors for light mode visibility if needed, or stick to generic accessible colors */
 
-  /* Logs */
+  /* Logs & Network */
+  .network-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--pm-bg-tertiary);
+    border-bottom: 1px solid var(--pm-border);
+    align-items: center;
+  }
+
+  .search-box {
+    flex: 1;
+  }
+
+  .type-filter {
+    width: 100px;
+  }
+
   .network-logs {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    padding: 8px;
   }
 
   .log-item {
@@ -878,6 +953,17 @@
     border-radius: 6px;
     border: 1px solid var(--pm-border);
     border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .log-item:hover {
+    border-color: var(--pm-border-focus);
+  }
+  
+  .log-item.expanded {
+    border-color: var(--pm-border-focus);
+    background: var(--pm-hover-bg);
   }
   
   .log-item.is-mock {
@@ -909,21 +995,28 @@
     font-size: 12px;
   }
   
-  .mock-it-btn {
+  .log-actions {
+    display: flex;
+    gap: 4px;
+  }
+  
+  .action-btn {
     background: none;
     border: none;
     color: var(--pm-text-secondary);
     cursor: pointer;
-    padding: 2px;
+    padding: 4px;
     border-radius: 4px;
     display: flex;
     align-items: center;
-    margin-left: 4px;
+    transition: all 0.2s;
   }
-  .mock-it-btn:hover {
-    color: var(--pm-primary);
+  .action-btn:hover {
     background: var(--pm-hover-bg);
+    color: var(--pm-text-primary);
   }
+  .mock-btn:hover { color: var(--pm-primary); }
+  .del-btn:hover { color: var(--pm-danger); }
 
   .log-meta {
     display: flex;
@@ -940,5 +1033,32 @@
     border: 1px solid currentColor;
     padding: 0 4px;
     border-radius: 3px;
+  }
+  
+  .log-details {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--pm-border);
+    cursor: auto;
+  }
+  
+  .detail-label {
+    font-size: 10px;
+    color: var(--pm-text-secondary);
+    margin-bottom: 4px;
+    font-weight: bold;
+  }
+  
+  .detail-body {
+    font-family: 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: var(--pm-text-primary);
+    background: var(--pm-input-bg);
+    padding: 8px;
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    max-height: 200px;
+    margin: 0;
   }
 </style>
