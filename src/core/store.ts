@@ -140,12 +140,12 @@ export const updateRuleDelay = (id: string, delay: number) => {
   rules.update(items => items.map(r => r.id === id ? { ...r, delay } : r));
 };
 
-export const addRule = (url: string, method: string) => {
+export const addRule = (url: string, method: string, initialResponse?: any) => {
   const newRule: MockRule = {
     id: Date.now().toString(),
     url,
     method,
-    response: { message: "Hello PocketMock" },
+    response: initialResponse || { message: "Hello PocketMock" },
     enabled: true,
     delay: 0,
     status: 200,

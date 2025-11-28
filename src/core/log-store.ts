@@ -8,6 +8,7 @@ export interface LogEntry {
   timestamp: number;
   duration: number;
   isMock: boolean;
+  responseBody?: string;
 }
 
 function createLogStore() {

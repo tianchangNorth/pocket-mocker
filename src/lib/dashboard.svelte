@@ -34,6 +34,28 @@
 
   const METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"];
 
+  function createRuleFromLog(log: any) {
+    let responseBody = log.responseBody;
+    
+    // Try to parse JSON string if applicable
+    if (typeof responseBody === 'string') {
+      try {
+        responseBody = JSON.parse(responseBody);
+      } catch (e) {
+        // Keep as string if not valid JSON
+      }
+    }
+
+    // If body is still empty string or undefined, use default
+    if (!responseBody && responseBody !== 0) {
+       responseBody = { message: "Mocked from " + log.url };
+    }
+
+    addRule(log.url, log.method, responseBody);
+    activeMainTab = 'rules';
+    showToast("Rule created from network log", "success");
+  }
+
   function handleAddRule() {
     if (!newRuleUrl) {
       showToast("Please enter URL", "warning");
@@ -96,11 +118,7 @@
   let initialBottom = 0; // Anchor to BOTTOM
   let containerRef: HTMLDivElement;
   
-  // Remove reactive position state to avoid re-renders during drag
-  // let position = { x: -1, y: -1 }; 
-
   // Normalize position on mount to ensure consistent behavior
-  // Lock to bottom/right coordinates to match CSS initial state
   onMount(() => {
     if (containerRef) {
       const rect = containerRef.getBoundingClientRect();
@@ -449,14 +467,22 @@
             </div>
           {:else}
             {#each $requestLogs as log (log.id)}
-              <div class="log-item">
+              <div class="log-item" class:is-mock={log.isMock}>
                 <div class="log-header">
                   <span class="status-badge" class:success={log.status >= 200 && log.status < 300} class:error={log.status >= 400}>{log.status}</span>
                   <span class="method-badge">{log.method}</span>
                   <span class="log-url" title={log.url}>{log.url}</span>
+                  {#if !log.isMock}
+                    <button class="mock-it-btn" title="Mock this request" on:click={() => createRuleFromLog(log)}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                      </svg>
+                    </button>
+                  {/if}
                 </div>
                 <div class="log-meta">
                   <span class="duration">{log.duration}ms</span>
+                  <span class="source-badge">{log.isMock ? 'MOCK' : 'REAL'}</span>
                   <span class="time">{new Date(log.timestamp).toLocaleTimeString()}</span>
                 </div>
               </div>
@@ -851,6 +877,12 @@
     padding: 8px 12px;
     border-radius: 6px;
     border: 1px solid var(--pm-border);
+    border-left: 3px solid transparent;
+  }
+  
+  .log-item.is-mock {
+    border-left-color: var(--pm-primary);
+    background: rgba(var(--pm-primary-rgb), 0.05);
   }
 
   .log-header {
@@ -863,6 +895,7 @@
   .status-badge {
     font-family: monospace;
     font-weight: bold;
+    min-width: 30px;
   }
   .status-badge.success { color: #10b981; }
   .status-badge.error { color: #ef4444; }
@@ -873,12 +906,39 @@
     overflow: hidden;
     text-overflow: ellipsis;
     flex: 1;
+    font-size: 12px;
+  }
+  
+  .mock-it-btn {
+    background: none;
+    border: none;
+    color: var(--pm-text-secondary);
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    margin-left: 4px;
+  }
+  .mock-it-btn:hover {
+    color: var(--pm-primary);
+    background: var(--pm-hover-bg);
   }
 
   .log-meta {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     color: var(--pm-text-secondary);
-    font-size: 11px;
+    font-size: 10px;
+  }
+  
+  .source-badge {
+    font-weight: bold;
+    opacity: 0.6;
+    font-size: 9px;
+    border: 1px solid currentColor;
+    padding: 0 4px;
+    border-radius: 3px;
   }
 </style>

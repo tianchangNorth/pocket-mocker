@@ -128,7 +128,6 @@ export function patchFetch() {
 
       if (typeof resolvedResponse === 'function') {
         const mockRequest = await createMockRequest(url, method, requestHeaders, bodyData, match.params);
-        console.log('[PocketMock] Executing dynamic response with req:', mockRequest); // Debug log
         try {
           resolvedResponse = await Promise.resolve(resolvedResponse(mockRequest));
         } catch (e) {
@@ -186,13 +185,49 @@ export function patchFetch() {
       );
     }
 
-    return originalFetch(input, init);
+    // === Real Request Monitoring ===
+    const promise = originalFetch(input, init);
+
+    promise.then(async (response) => {
+      const duration = Math.round(performance.now() - startTime);
+      let responseBody = '';
+      try {
+        const clone = response.clone();
+        const contentType = clone.headers.get('content-type') || '';
+        if (contentType.includes('application/json') || contentType.includes('text/') || contentType.includes('xml')) {
+          responseBody = await clone.text();
+        } else {
+          responseBody = '[Binary/Stream Data]';
+        }
+      } catch (e) {
+        responseBody = '[Error reading body]';
+      }
+
+      requestLogs.add({
+        method,
+        url,
+        status: response.status,
+        timestamp: Date.now(),
+        duration,
+        isMock: false,
+        responseBody
+      });
+    }).catch(() => {
+       // Network error, usually handled by browser console, but we could log it as status 0
+       requestLogs.add({
+        method,
+        url,
+        status: 0,
+        timestamp: Date.now(),
+        duration: Math.round(performance.now() - startTime),
+        isMock: false,
+        responseBody: '[Network Error]'
+      });
+    });
+
+    return promise;
   };
 }
-
-/**
- * Core: Intercept XMLHttpRequest
- */
 
 function patchXHR() {
   const OriginalXHR = window.XMLHttpRequest;
@@ -271,7 +306,7 @@ function patchXHR() {
 
             if (typeof resolvedResponse === 'function') {
               const mockRequest = await createMockRequest(this._url, this._method, this._requestHeaders, bodyData, match.params);
-              console.log('[PocketMock] Executing dynamic response (XHR) with req:', mockRequest); // Debug log
+              // console.log('[PocketMock] Executing dynamic response (XHR) with req:', mockRequest); // Remove log
               try {
                   resolvedResponse = await Promise.resolve(resolvedResponse(mockRequest));
                   // console.log('[PocketMock] Dynamic response result:', resolvedResponse); // Remove log
@@ -309,11 +344,11 @@ function patchXHR() {
               actualHeaders = { ...actualHeaders, ...resolvedResponse.headers };
             }
 
-                        const responseData = (typeof actualResponseData === 'string' ? actualResponseData : JSON.stringify(actualResponseData)) || '{}';
+            const responseData = (typeof actualResponseData === 'string' ? actualResponseData : JSON.stringify(actualResponseData)) || '{}';
 
-                        console.log('[PocketMock] XHR responseData being set:', responseData); // Debug log
+            // console.log('[PocketMock] XHR responseData being set:', responseData); // Remove log
 
-                        Object.defineProperty(this, 'status', { value: actualStatus, writable: true });
+            Object.defineProperty(this, 'status', { value: actualStatus, writable: true });
             Object.defineProperty(this, 'statusText', { value: actualStatus === 200 ? 'OK' : 'Mocked', writable: true });
             Object.defineProperty(this, 'readyState', { value: 4, writable: true });
             Object.defineProperty(this, 'response', { value: responseData, writable: true });
@@ -329,7 +364,8 @@ function patchXHR() {
             this.getResponseHeader = (name: string) => actualHeaders[name.toLowerCase()] || null;
 
             requestLogs.add({
-              method: this._method, url: this._url, status: actualStatus, timestamp: Date.now(), duration, isMock: true
+              method: this._method, url: this._url, status: actualStatus, timestamp: Date.now(), duration, isMock: true,
+              responseBody: responseData // Store response body for mock too
             });
 
             setTimeout(() => {
@@ -353,6 +389,50 @@ function patchXHR() {
 
             return; // 拦截成功，不再发送真实请求
           }
+
+          // === Real Request Monitoring for XHR ===
+          // Attach listeners BEFORE calling super.send to ensure they are active.
+          // Note: XHR event model is different from Fetch, response is available after loadend.
+          this.addEventListener('loadend', () => { // Use loadend for final state
+            const duration = Math.round(performance.now() - this._startTime);
+            let responseBody = '';
+            try {
+              // Try to get response text
+              // XHR.response can be object (json), string (text), Blob, ArrayBuffer
+              if (!this.responseType || this.responseType === 'text') { // Default or text
+                responseBody = this.responseText;
+              } else if (this.responseType === 'json') { // Already parsed json
+                responseBody = JSON.stringify(this.response);
+              } else { // Blob, ArrayBuffer, etc.
+                responseBody = `[${this.responseType} Data]`
+              }
+            } catch (e) {
+              responseBody = '[Error reading body]';
+            }
+            
+            requestLogs.add({
+              method: this._method,
+              url: this._url,
+              status: this.status,
+              timestamp: Date.now(),
+              duration,
+              isMock: false,
+              responseBody
+            });
+          });
+
+          this.addEventListener('error', () => {
+             requestLogs.add({
+                method: this._method,
+                url: this._url,
+                status: this.status || 0, // XHR status might be 0 on network error
+                timestamp: Date.now(),
+                duration: Math.round(performance.now() - this._startTime),
+                isMock: false,
+                responseBody: '[Network Error]'
+             });
+          });
+
 
           // 未命中规则，透传
           super.send(body);
