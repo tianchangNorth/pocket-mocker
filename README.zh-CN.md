@@ -1,10 +1,10 @@
 # 🛠️ PocketMock
 
-> **所见即所得的浏览器端可视化 HTTP 调试台。**
+> **所见即所得的浏览器端可视化 HTTP 调试工具。**
 > 一款轻量级、可视化的浏览器内 HTTP Mock 工具，专为现代前端开发而设计。
 
 [![npm 版本](https://badge.fury.io/js/pocket-mocker.svg)](https://badge.fury.io/js/pocket-mocker)
-[![开源协议: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
+[![开源协议: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [English](README.md) | **中文**
 
@@ -12,14 +12,14 @@
 
 ## ✨ 核心特性
 
-- **⚡️ 双核拦截引擎**：原生支持 `fetch` 和 `XMLHttpRequest` (Ajax)，无缝兼容 Axios 等第三方库
-- **🎨 智能控制台**：内置 **CodeMirror 6** 编辑器（支持 JS 语法高亮），自适应 **深色/浅色主题**，提供优雅的 **Toast** 通知
-- **🧠 动态响应**：支持编写 JavaScript 函数，根据请求参数 (Query/Body) 动态生成响应数据，处理复杂逻辑
-- **🌐 功能全面的网络面板**：实时记录所有网络请求（Mocked 或真实请求），支持 **搜索与筛选**、**详情查看** (请求/响应体)、**单条日志删除**，以及 **"一键 Mock"** 功能（将真实请求转化为 Mock 规则）。
-- **📥 配置导入**：支持从 **Postman Collections** 和 **OpenAPI 3.0** 规范直接导入 Mock 规则，自动智能生成数据
-- **🛡️ Shadow DOM 隔离**：UI 样式完全隔离，绝不污染你的业务页面 CSS，也不受外部影响
-- **🐢 网络环境模拟**：一键模拟接口 **延迟 (Latency)**、**404/500 报错**，轻松测试骨架屏和错误边界
-- **📂 双模持久化**：
+- **双核拦截引擎**：原生支持 `fetch` 和 `XMLHttpRequest` (Ajax)，无缝兼容 Axios 等第三方库
+- **智能控制台**：内置 **CodeMirror 6** 编辑器（支持 JS 语法高亮），自适应 **深色/浅色主题**，提供优雅的 **Toast** 通知
+- **动态响应**：支持编写 JavaScript 函数，根据请求参数 (Query/Body) 动态生成响应数据，处理复杂逻辑
+- **功能全面的网络面板**：实时记录所有网络请求（Mocked 或真实请求），支持 **搜索与筛选**、**详情查看** (请求/响应体)、**单条日志删除**，以及 **"一键 Mock"** 功能（将真实请求转化为 Mock 规则）
+- **配置导入**：支持从 **Postman Collections** 和 **OpenAPI 3.0** 规范直接导入 Mock 规则，自动智能生成数据
+- **Shadow DOM 隔离**：UI 样式完全隔离，绝不污染你的业务页面 CSS，也不受外部影响
+- **网络环境模拟**：一键模拟接口 **延迟 (Latency)**、**404/500 报错**，轻松测试骨架屏和错误边界
+- **双模持久化**：
   - **本地模式**：默认使用 LocalStorage，刷新不丢失
   - **服务器模式**：配合 Vite 插件，自动将规则同步保存到本地文件，实现**团队共享**
 
@@ -51,7 +51,7 @@ if (process.env.NODE_ENV === 'development') {
 
 ### 方式二：团队协作模式（Vite 插件）🔥 推荐
 
-适合生产级项目。通过 Vite 插件打通文件系统，将 Mock 规则保存为配置文件并提交到 Git 仓库。
+适合生产级项目。通过 Vite 插件打通文件系统，将 Mock 规则保存为配置文件。
 
 **1. 配置 `vite.config.ts`**
 
@@ -70,9 +70,9 @@ export default defineConfig({
 
 运行 `npm run dev`。PocketMock 会自动检测到插件环境，并切换到 **服务器模式**。
 
-## 🛠️ 进阶功能
+## 进阶功能
 
-### 🧠 智能 Mock 数据生成
+### 智能 Mock 数据生成
 
 PocketMock 内置了强大的 **智能 Mock 生成器**，让你可以通过简单的模板语法创建逼真的测试数据。非常适合生成复杂的 API 响应、用户资料和测试数据。
 
@@ -217,8 +217,6 @@ PocketMock 内置了强大的 **智能 Mock 生成器**，让你可以通过简�
 
 ### 📥 配置导入
 
-
-
 支持从主流 API 文档格式直接导入 Mock 规则。智能数据生成功能自动将请求体和 Schema 定义转换为逼真的 Mock 响应数据。
 
 #### 支持的格式
@@ -348,7 +346,7 @@ PocketMock 内置了强大的 **智能 Mock 生成器**，让你可以通过简�
   if (req.query.id === '1') {
     return { id: 1, name: 'Admin', role: 'admin' };
   }
-  
+
   // 获取 JSON Body
   if (req.body && req.body.type === 'guest') {
     return { id: 2, name: 'Guest', role: 'guest' };
@@ -382,12 +380,12 @@ interface MockRule {
 
 内置的网络面板将实时记录所有网络请求（包括 Mocked 和真实请求），提供强大的调试能力：
 
--   **所有请求**：查看应用程序发出的每一个 `fetch` 和 `XMLHttpRequest` 请求。
--   **搜索与筛选**：通过 URL 或方法快速查找请求，并按类型（Mocked/真实）进行筛选。
--   **详情查看**：点击任意日志条目，即可展开并查看完整的响应体（Response Body）。
--   **“一键 Mock”功能**：点击按钮即可将任何真实网络请求转换为一条新的 Mock 规则，自动预填充 URL、方法和响应体。
--   **单条日志删除**：删除单个日志条目，保持列表清晰。
--   **清空所有日志**：立即清空所有日志历史记录。
+- **所有请求**：查看应用程序发出的每一个 `fetch` 和 `XMLHttpRequest` 请求。
+- **搜索与筛选**：通过 URL 或方法快速查找请求，并按类型（Mocked/真实）进行筛选。
+- **详情查看**：点击任意日志条目，即可展开并查看完整的响应体（Response Body）。
+- **"一键 Mock"功能**：点击按钮即可将任何真实网络请求转换为一条新的 Mock 规则，自动预填充 URL、方法和响应体。
+- **单条日志删除**：删除单个日志条目，保持列表清晰。
+- **清空所有日志**：立即清空所有日志历史记录。
 
 ### 智能降级策略
 
@@ -430,7 +428,7 @@ pocketMock({
 完整的 TypeScript 支持：
 
 ```typescript
-import type { pocketMock, MockRule } from 'pocket-mocker';
+import { pocketMock, MockRule } from 'pocket-mocker';
 
 // 类型自动可用
 const rule: MockRule = {
@@ -450,7 +448,7 @@ const rule: MockRule = {
 本地开发环境搭建：
 
 ```bash
-git clone https://github.com/your-username/pocket-mock.git
+git clone https://github.com/tianchangNorth/pocket-mock.git
 cd pocket-mock
 npm install
 
@@ -466,7 +464,7 @@ npm test
 
 ## 📄 开源协议
 
-MIT © [Your Name](https://github.com/your-username)
+MIT © [Your Name](https://github.com/tianchangNorth)
 
 ## 🙏 致谢
 

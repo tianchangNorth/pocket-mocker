@@ -5,24 +5,23 @@
 > A lightweight, visual debugging tool that intercepts and modifies HTTP requests directly in your browser.
 
 [![npm version](https://badge.fury.io/js/pocket-mocker.svg)](https://badge.fury.io/js/pocket-mocker)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT). 
+
 **English** | [中文](README.zh-CN.md)
 
 **PocketMock** is a zero-intrusion frontend Mock tool. Unlike Postman or traditional `mock.js`, it embeds directly **into your page**, allowing you to intercept `fetch` and `XMLHttpRequest` in real-time during development, dynamically modify response data, simulate network latency, and test error status codes.
 
-
-
 ## ✨ Features
 
-- **⚡ Dual-Core Interception Engine**: Native support for both `fetch` and `XMLHttpRequest` (Ajax), seamlessly compatible with Axios and other third-party libraries
-- **🎨 Visual Console**: Built-in Svelte debugging panel with **CodeMirror 6** editor (JS syntax highlighting), toggle switches, and real-time preview
-- **🧠 Dynamic Response**: Support writing JavaScript functions to handle complex logic and return dynamic data based on request parameters
-- **✨ Smart UI**: Auto-adaptive **Light/Dark Theme**, elegant **Toast** notifications, and responsive layout
-- **🌐 Comprehensive Network Panel**: Logs all network requests (mocked or real), with **search & filter**, **details view** (request/response body), **single-log deletion**, and **"Mock It"** feature to convert real requests into mock rules with one click.
-- **📥 Config Import**: Import mock rules directly from **Postman Collections** and **OpenAPI 3.0** specifications with smart data generation
-- **🛡️ Shadow DOM Isolation**: UI styles are completely isolated, never polluting your application's CSS or being affected by external styles
-- **🐢 Network Simulation**: One-click simulation of API **latency**, **404/500 errors**, perfect for testing skeleton screens and error boundaries
-- **📂 Dual-Mode Persistence**:
+- **Dual-Core Interception Engine**: Native support for both `fetch` and `XMLHttpRequest` (Ajax), seamlessly compatible with Axios and other third-party libraries
+- **Visual Console**: Built-in Svelte debugging panel with **CodeMirror 6** editor (JS syntax highlighting), toggle switches, and real-time preview
+- **Dynamic Response**: Support writing JavaScript functions to handle complex logic and return dynamic data based on request parameters
+- **Smart UI**: Auto-adaptive **Light/Dark Theme**, elegant **Toast** notifications, and responsive layout
+- **Comprehensive Network Panel**: Logs all network requests (mocked or real), with **search & filter**, **details view** (request/response body), **single-log deletion**, and **"Mock It"** feature to convert real requests into mock rules with one click
+- **Config Import**: Import mock rules directly from **Postman Collections** and **OpenAPI 3.0** specifications with smart data generation
+- **Shadow DOM Isolation**: UI styles are completely isolated, never polluting your application's CSS or being affected by external styles
+- **Network Simulation**: One-click simulation of API **latency**, **404/500 errors**, perfect for testing skeleton screens and error boundaries
+- **Dual-Mode Persistence**:
   - **Local Mode**: Default browser LocalStorage storage, rules persist across page refreshes
   - **Server Mode**: Vite plugin integration saves rules to local files for **team collaboration**
 
@@ -59,7 +58,7 @@ Ideal for production-level projects. The Vite plugin integrates with the file sy
 **1. Configure `vite.config.ts`**
 
 ```typescript
-import { defineConfig } => 'vite';
+import { defineConfig } from 'vite';
 import pocketMockPlugin from 'pocket-mocker/vite-plugin';
 
 export default defineConfig({
@@ -73,9 +72,9 @@ export default defineConfig({
 
 Run `npm run dev`. PocketMock automatically detects the plugin environment and switches to **Server Mode**.
 
-## 🛠️ Advanced Features
+## Advanced Features
 
-### 🧠 Smart Mock Data Generation
+### Smart Mock Data Generation
 
 PocketMock includes a powerful **Smart Mock Generator** that allows you to create realistic test data with simple template syntax. Perfect for generating complex API responses, user profiles, and test data.
 
@@ -220,8 +219,6 @@ You can use smart generators within function responses for even more power:
 
 ### 📥 Config Import
 
-
-
 Import mock rules directly from popular API documentation formats. Smart data generation automatically converts request bodies and schema definitions into realistic mock responses.
 
 #### Supported Formats
@@ -342,7 +339,7 @@ This ensures compatibility with PocketMock's URL matching system while maintaini
 
 ### Dynamic Response (Function Mock)
 
-You are not limited to static JSON. You can write JavaScript functions to generate responses dynamically based on the request!
+You are not limited to static JSON. You can write JavaScript functions to generate responses dynamically based on request!
 
 ```javascript
 // In the Dashboard editor or config file:
@@ -351,7 +348,7 @@ You are not limited to static JSON. You can write JavaScript functions to genera
   if (req.query.id === '1') {
     return { id: 1, name: 'Admin User', role: 'admin' };
   }
-  
+
   // Access JSON body
   if (req.body && req.body.type === 'guest') {
     return { id: 2, name: 'Guest', role: 'guest' };
@@ -387,17 +384,18 @@ interface MockRule {
 
 The built-in Network panel logs all network requests (both mocked and real) in real-time, providing powerful debugging capabilities:
 
--   **All Requests**: See every `fetch` and `XMLHttpRequest` call made by your application.
--   **Search & Filter**: Quickly find requests by URL or method, and filter by type (Mocked/Real).
--   **Details View**: Click on any log entry to expand and view the full response body.
--   **"Mock It" Feature**: Convert any real network request into a new mock rule with a single click, automatically pre-filling the URL, method, and response body.
--   **Single Log Deletion**: Remove individual log entries for better clarity.
--   **Clear All Logs**: Clear the entire log history instantly.
+- **All Requests**: See every `fetch` and `XMLHttpRequest` call made by your application.
+- **Search & Filter**: Quickly find requests by URL or method, and filter by type (Mocked/Real).
+- **Details View**: Click on any log entry to expand and view the full response body.
+- **"Mock It" Feature**: Convert any real network request into a new mock rule with a single click, automatically pre-filling URL, method, and response body.
+- **Single Log Deletion**: Remove individual log entries for better clarity.
+- **Clear All Logs**: Clear the entire log history instantly.
 
 ### Smart Fallback Strategy
+
 PocketMock uses a progressive architecture:
 
-1. **Startup**: Attempts to connect to development server API
+1. **Startup**: Attempts to connect to the development server API
 2. **Server Mode**: If successful, enables file read/write operations
 3. **Local Mode**: If connection fails (no plugin or non-Vite environment), automatically falls back to LocalStorage storage
 
@@ -434,7 +432,7 @@ pocketMock({
 Full TypeScript support included:
 
 ```typescript
-import type { pocketMock, MockRule } from 'pocket-mocker';
+import { pocketMock, MockRule } from 'pocket-mocker';
 
 // Types are automatically available
 const rule: MockRule = {
@@ -454,7 +452,7 @@ const rule: MockRule = {
 Local development setup:
 
 ```bash
-git clone https://github.com/your-username/pocket-mock.git
+git clone https://github.com/tianchangNorth/pocket-mock.git
 cd pocket-mock
 npm install
 
@@ -470,11 +468,11 @@ npm test
 
 ## 📄 License
 
-MIT © [Your Name](https://github.com/your-username)
+MIT © [Your Name](https://github.com/tianchangNorth)
 
 ## 🙏 Acknowledgments
 
-- Built with [Svelte](https://svelte.dev/) for the reactive UI
+- Built with [Svelte](https://svelte.dev/) for reactive UI
 - Powered by [Vite](https://vitejs.dev/) for fast development and building
 - Inspired by modern web development needs for better debugging tools
 
