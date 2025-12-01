@@ -1,4 +1,4 @@
-# 🛠️ PocketMock
+# PocketMocker
 
 > **所见即所得的浏览器端可视化 HTTP 调试工具。**
 >
@@ -9,9 +9,9 @@
 
 [English](README.md) | **中文**
 
-![PocketMock Demo](docs/pocket.webp)
+![PocketMocker Demo](docs/pocket.webp)
 
-**PocketMock** 是一款零侵入的前端 Mock 工具。与 Postman 或传统的 `mock.js` 不同，它直接**嵌入在你的页面中**，让你在开发时可以实时拦截 `fetch` 和 `XMLHttpRequest`，动态修改响应数据、模拟网络延迟和异常状态码。
+**PocketMocker** 是一款零侵入的前端 Mock 工具。与 Postman 或传统的 `mock.js` 不同，它直接**嵌入在你的页面中**，让你在开发时可以实时拦截 `fetch` 和 `XMLHttpRequest`，动态修改响应数据、模拟网络延迟和异常状态码。
 
 ## ✨ 核心特性
 
