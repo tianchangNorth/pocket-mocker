@@ -9,7 +9,6 @@ export function importOpenAPI(doc: OpenAPIDocument): MockRule[] {
   const schemas = doc.components?.schemas || {};
 
   for (const [path, pathItem] of Object.entries(doc.paths)) {
-    // Convert OpenAPI path params {id} to PocketMock :id
     const ruleUrl = path.replace(/\{([a-zA-Z0-9_]+)\}/g, ':$1');
 
     const methods = ['get', 'post', 'put', 'delete', 'patch', 'options'];

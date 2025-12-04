@@ -1,4 +1,3 @@
-
 export interface MockRequest {
   url: string;
   method: string;

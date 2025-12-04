@@ -442,7 +442,6 @@ async function request(method: string, url: string, body?: any) {
   }
 }
 
-// Bind Events
 document.getElementById('btn-smart')!.addEventListener('click', () => request('GET', '/api/user/profile'));
 document.getElementById('btn-list')!.addEventListener('click', () => request('GET', '/api/products/featured'));
 document.getElementById('btn-error')!.addEventListener('click', () => request('GET', '/api/system/status'));
