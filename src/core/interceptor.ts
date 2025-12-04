@@ -389,7 +389,7 @@ function patchXHR() {
           // === Real Request Monitoring for XHR ===
           // Attach listeners BEFORE calling super.send to ensure they are active.
           // Note: XHR event model is different from Fetch, response is available after loadend.
-          this.addEventListener('loadend', () => { // Use loadend for final state
+          this.addEventListener('loadend', () => {
             const duration = Math.round(performance.now() - this._startTime);
             let responseBody = '';
             try {

@@ -1,9 +1,9 @@
 import type { MockRule } from '../types';
 import type { OpenAPIDocument, OpenAPISchema } from './types';
 
-/**
- * Converts an OpenAPI 3.0 Document to PocketMock rules.
- */
+
+// Converts an OpenAPI 3.0 Document to PocketMock rules.
+
 export function importOpenAPI(doc: OpenAPIDocument): MockRule[] {
   const rules: MockRule[] = [];
   const schemas = doc.components?.schemas || {};

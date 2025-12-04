@@ -10,10 +10,8 @@ export function importPostmanCollection(collection: PostmanCollection): MockRule
   function processItems(items: PostmanItem[]) {
     items.forEach(item => {
       if (item.item) {
-        // It's a folder, recurse
         processItems(item.item);
       } else if (item.request) {
-        // It's a request
         const rule = convertRequestToRule(item);
         if (rule) {
           rules.push(rule);
@@ -33,8 +31,8 @@ function convertRequestToRule(item: PostmanItem): MockRule | null {
   if (!item.request) return null;
 
   const { request, name } = item;
-
   let url = '';
+
   if (typeof request.url === 'string') {
     url = request.url;
   } else if (request.url && request.url.raw) {
@@ -44,7 +42,6 @@ function convertRequestToRule(item: PostmanItem): MockRule | null {
   url = url.replace(/\{\{([a-zA-Z0-9_]+)\}\}/g, ':$1');
 
   const method = request.method || 'GET';
-
   let response: any = { status: 'ok', message: 'Imported from Postman' };
 
   if (request.body && request.body.mode === 'raw' && request.body.raw) {
