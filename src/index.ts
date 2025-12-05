@@ -1,8 +1,8 @@
 import Dashboard from './lib/dashboard.svelte';
-import { initInterceptor } from '@/core/interceptor/index';
+import { initInterceptor } from '@/core';
 import { initStore } from './store/store';
 import globalStyles from './app.css?inline';
-import type { MockRule } from '@/core/interceptor/types';
+import type { MockRule } from '@/core';
 
 let app: Dashboard | null = null;
 let shadowHost: HTMLElement | null = null;
@@ -11,7 +11,7 @@ export interface PocketMockOptions {
   enable?: boolean;
 }
 
-export type { MockRule, MockRequest, DynamicResponseFunction } from './core/interceptor/types';
+export type { MockRule, MockRequest, DynamicResponseFunction } from './core/types';
 
 export function defineConfig(config: MockRule[]): MockRule[] {
   return config;

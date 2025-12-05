@@ -1,5 +1,5 @@
 import Dashboard from './lib/dashboard.svelte';
-import { initInterceptor } from '@/core/interceptor/index';
+import { initInterceptor } from '@/core';
 import { initStore, addRule } from './store/store';
 import axios from 'axios';
 

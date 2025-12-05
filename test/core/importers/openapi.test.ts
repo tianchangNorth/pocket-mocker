@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { importOpenAPI } from '../../src/core/importers/openapi';
-import type { OpenAPIDocument } from '../../src/core/importers/types';
+import { importOpenAPI } from '../../../src/core/importers/openapi';
+import type { OpenAPIDocument } from '../../../src/core/types';
 
 describe('importOpenAPI', () => {
   it('should import basic path with GET operation', () => {

@@ -1,4 +1,4 @@
-import type { MockRequest } from './types';
+import type { MockRequest } from '../types';
 
 export async function createMockRequest(
   url: string,

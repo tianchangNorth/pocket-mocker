@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { importPostmanCollection } from '../../src/core/importers/postman';
-import type { PostmanCollection } from '../../src/core/importers/types';
+import { importPostmanCollection } from '../../../src/core/importers/postman';
+import type { PostmanCollection } from '../../../src/core/types';
 
 describe('importPostmanCollection', () => {
   it('should import a simple collection with one request', () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { generateMockData } from '../src/core/interceptor/smart-mock';
-import { importPostmanCollection } from '../src/core/importers/postman';
-import { importOpenAPI } from '../src/core/importers/openapi';
+import { generateMockData } from '../../../src/core/engine/smart-mock';
+import { importPostmanCollection } from '../../../src/core/importers/postman';
+import { importOpenAPI } from '../../../src/core/importers/openapi';
 
 describe('配置导入与Smart Mock集成测试', () => {
   it('应该正确处理Postman导入后的智能mock数据', () => {

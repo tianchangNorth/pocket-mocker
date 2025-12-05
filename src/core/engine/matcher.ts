@@ -1,4 +1,4 @@
-import type { MatchResult, ParsedRoute } from './types'
+import type { MatchResult, ParsedRoute } from '../types'
 
 const patternCache = new Map<string, ParsedRoute | null>();
 

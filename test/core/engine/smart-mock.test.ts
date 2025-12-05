@@ -1,6 +1,6 @@
 // test/core/smart-mock.test.ts
 import { describe, it, expect, vi } from 'vitest';
-import { generateMockData } from '../src/core/interceptor/smart-mock';
+import { generateMockData } from '../../../src/core/engine/smart-mock';
 
 describe('generateMockData', () => {
   it('should return primitive values as is', () => {

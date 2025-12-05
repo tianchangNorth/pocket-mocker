@@ -1,4 +1,4 @@
-import type { MockGenerator } from './types'
+import type { MockGenerator } from '../types'
 
 const generators: Record<string, MockGenerator> = {
 

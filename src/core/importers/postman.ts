@@ -1,9 +1,5 @@
-import type { MockRule } from '../interceptor/types';
-import type { PostmanCollection, PostmanItem } from './types';
+import type { MockRule, PostmanCollection, PostmanItem } from '../types';
 
-/**
- * Converts a Postman Collection to PocketMock rules.
- */
 export function importPostmanCollection(collection: PostmanCollection): MockRule[] {
   const rules: MockRule[] = [];
 
@@ -73,10 +69,6 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
 }
 
-/**
- * Recursively traverses an object and replaces values with Smart Mock placeholders
- * based on key names (inference).
- */
 function enhanceMockData(data: any): any {
   if (Array.isArray(data)) {
     return data.map(item => enhanceMockData(item));

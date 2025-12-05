@@ -1,5 +1,4 @@
-import type { MockRule } from '../interceptor/types';
-import type { OpenAPIDocument, OpenAPISchema } from './types';
+import type { MockRule, OpenAPIDocument, OpenAPISchema } from '../types';
 
 export function importOpenAPI(doc: OpenAPIDocument): MockRule[] {
   const rules: MockRule[] = [];
