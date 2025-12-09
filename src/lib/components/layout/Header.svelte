@@ -101,7 +101,7 @@
     padding: 12px 16px;
     background: var(--pm-bg-tertiary); 
     border-bottom: 1px solid var(--pm-border);
-    cursor: move; /* Indicate draggable */
+    cursor: move; 
   }
 
   .title-area {

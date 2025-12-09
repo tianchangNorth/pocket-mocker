@@ -52,7 +52,6 @@ const loginRule = {
 };
 addRule(loginRule.url, loginRule.method, loginRule.response);
 
-// Scenario D: Error Simulation
 const errorRule = {
   "id": "error-demo",
   "url": "/api/system/status",

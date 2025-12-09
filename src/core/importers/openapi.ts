@@ -55,10 +55,6 @@ function generateResponseFromOperation(operation: any, schemas: Record<string, O
   return generateMockFromSchema(jsonContent.schema, schemas);
 }
 
-/**
- * Generates mock data based on OpenAPI Schema.
- * Handles recursion, refs, and smart mock inference.
- */
 function generateMockFromSchema(schema: OpenAPISchema, schemas: Record<string, OpenAPISchema>, depth = 0): any {
   if (depth > 5) return null;
 

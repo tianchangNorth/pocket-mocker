@@ -19,7 +19,6 @@
   const METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"];
   let currentRuleId: string | null = null;
 
-  // Initialize editor state
   $: if (rule && rule.id !== currentRuleId) {
     currentRuleId = rule.id;
     

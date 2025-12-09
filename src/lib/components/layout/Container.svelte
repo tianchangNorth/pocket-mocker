@@ -29,7 +29,6 @@
   });
 
   function handleMouseDown(e: MouseEvent) {
-    // Only allow dragging from header, ignore buttons
     if ((e.target as HTMLElement).closest('button')) return;
     if ((e.target as HTMLElement).closest('input')) return;
 
@@ -41,17 +40,14 @@
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // Calculate initial anchors
     initialRight = viewportWidth - rect.right;
     initialBottom = viewportHeight - rect.bottom;
     
-    // Ensure we are using bottom/right positioning
     containerRef.style.top = 'auto';
     containerRef.style.left = 'auto';
     containerRef.style.right = `${initialRight}px`;
     containerRef.style.bottom = `${initialBottom}px`;
     
-    // Disable transition during drag for instant follow
     containerRef.style.transition = 'none';
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -67,7 +63,6 @@
     let newRight = initialRight - dx;
     let newBottom = initialBottom - dy;
 
-    // Boundary clamping
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     const width = containerRef.offsetWidth;
@@ -206,7 +201,6 @@
     overflow: hidden;
   }
 
-  /* Light Mode Override */
   @media (prefers-color-scheme: light) {
     .container {
       --pm-bg: #ffffff;
