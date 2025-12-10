@@ -29,9 +29,9 @@ Please open an [Issue](https://github.com/tianchangNorth/pocket-mocker/issues) o
   - [Network Panel](#comprehensive-network-panel)
 - [Roadmap](#roadmap)
 - [Technical Architecture](#technical-architecture)
-- [Contributing](#contributing)
+- [Contributing & Contact](#contributing--contact)
 
-https://github.com/user-attachments/assets/e7501191-7ef1-4bd4-bd21-6500585fe4ad.mp4
+![PocketMocker Demo](public/pocket.webp)
 
 
 **PocketMocker** is a zero-intrusion frontend Mock tool. Unlike Postman or traditional `mock.js`, it embeds directly **into your page**, allowing you to intercept `fetch` and `XMLHttpRequest` in real-time during development, dynamically modify response data, simulate network latency, and test error status codes.
@@ -50,7 +50,7 @@ https://github.com/user-attachments/assets/e7501191-7ef1-4bd4-bd21-6500585fe4ad.
   - **Local Mode**: Default browser LocalStorage storage, rules persist across page refreshes
   - **Server Mode**: Vite plugin integration saves rules to local files for **team collaboration**
 
-## 🆚 Comparison
+## Comparison
 
 | Feature | PocketMocker | Mock.js | Postman | MSW |
 | :--- | :---: | :---: | :---: | :---: |
@@ -210,11 +210,21 @@ The built-in Network panel logs all network requests (both mocked and real) in r
 
 Check out our [Roadmap](ROADMAP.md) to see what's next for PocketMocker and how you can contribute to its future!
 
-## Contributing
+## Contributing & Contact
 
 We welcome all contributions to PocketMocker! Whether it's reporting bugs, suggesting new features, improving documentation, or submitting code, your help is greatly appreciated.
 
 Please read our [Contribution Guidelines](CONTRIBUTING.md) for details on how to get started.
+
+### Contact Me
+
+If you have any questions, suggestions, or would like to connect, feel free to reach out:
+
+- **Twitter (X)**: [https://x.com/tiancha79267301](https://x.com/tiancha79267301)
+- **WeChat**
+<div align="center">
+  <img src="https://res.oafimg.cn/-/f69b6474980d7347/wechat.jpg" alt="My WeChat" width="150px">
+</div>
 
 ## 📄 License
 
