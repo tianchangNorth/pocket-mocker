@@ -141,7 +141,6 @@ PocketMock includes a powerful **Smart Mock Generator** that allows you to creat
 #### Usage Example
 
 ```javascript
-// Use in response body
 {
   "code": 0,
   "data": {
