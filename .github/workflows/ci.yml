@@ -14,11 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install npm
-        uses: npm/action-setup@v2
-        with:
-          version: 8
-
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
