@@ -42,7 +42,7 @@ describe('importOpenAPI', () => {
     const response = rules[0].response;
     expect(Array.isArray(response)).toBe(true);
     expect(response[0].id).toBe('@guid'); // Generated from format: uuid
-    expect(response[0].name).toBe('@cname'); // Inferred from key 'name'
+    expect(response[0].name).toBe('@name'); // Inferred from key 'name'
   });
 
   it('should handle path parameters conversion', () => {
