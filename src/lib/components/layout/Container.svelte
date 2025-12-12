@@ -6,12 +6,41 @@
   import Toast from '@/lib/ui/Toast.svelte';
 
   let isDragging = false;
+  let isResizing = false;
+  let resizeDirection = '';
   let startX = 0;
   let startY = 0;
   let initialRight = 0; 
   let initialBottom = 0;
+  let initialWidth = 0;
+  let initialHeight = 0;
   let containerRef: HTMLDivElement;
   
+  let width = 400;
+  let height = 600;
+  
+  let lastWidth = 0;
+  let lastHeight = 0;
+  let isEditing = false;
+
+  $: if (!!$uiState.editingRuleId !== isEditing) {
+    isEditing = !!$uiState.editingRuleId;
+    
+    if (isEditing) {
+      lastWidth = width;
+      lastHeight = height;
+
+      if (width < 800) width = 680;
+      if (height < 800) height = 800;
+      
+      if (width > window.innerWidth - 40) width = window.innerWidth - 40;
+      if (height > window.innerHeight - 40) height = window.innerHeight - 40;
+    } else {
+      if (lastWidth > 0) width = lastWidth;
+      if (lastHeight > 0) height = lastHeight;
+    }
+  }
+
   onMount(() => {
     if (containerRef) {
       const rect = containerRef.getBoundingClientRect();
@@ -28,9 +57,73 @@
     }
   });
 
+  function handleResizeStart(e: MouseEvent, direction: string) {
+    e.stopPropagation();
+    e.preventDefault();
+    isResizing = true;
+    resizeDirection = direction;
+    startX = e.clientX;
+    startY = e.clientY;
+    initialWidth = containerRef.offsetWidth;
+    initialHeight = containerRef.offsetHeight;
+    
+    const rect = containerRef.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    initialRight = viewportWidth - rect.right;
+    initialBottom = viewportHeight - rect.bottom;
+
+    window.addEventListener('mousemove', handleResizeMove);
+    window.addEventListener('mouseup', handleResizeEnd);
+  }
+
+  function handleResizeMove(e: MouseEvent) {
+    if (!isResizing) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    if (resizeDirection === 'left' || resizeDirection === 'corner') {
+      const newWidth = initialWidth - dx;
+      if (newWidth >= 400 && newWidth <= window.innerWidth - 20) {
+        width = newWidth;
+      }
+    }
+
+    if (resizeDirection === 'right') {
+      const newWidth = initialWidth + dx;
+      if (newWidth >= 400 && newWidth <= window.innerWidth - 20) {
+        width = newWidth;
+        containerRef.style.right = `${initialRight - dx}px`;
+      }
+    }
+
+    if (resizeDirection === 'top' || resizeDirection === 'corner') {
+      const newHeight = initialHeight - dy;
+      if (newHeight >= 600 && newHeight <= window.innerHeight - 20) {
+        height = newHeight;
+      }
+    }
+
+    if (resizeDirection === 'bottom') {
+      const newHeight = initialHeight + dy;
+      if (newHeight >= 600 && newHeight <= window.innerHeight - 20) {
+        height = newHeight;
+        containerRef.style.bottom = `${initialBottom - dy}px`;
+      }
+    }
+  }
+
+  function handleResizeEnd() {
+    isResizing = false;
+    window.removeEventListener('mousemove', handleResizeMove);
+    window.removeEventListener('mouseup', handleResizeEnd);
+  }
+
   function handleMouseDown(e: MouseEvent) {
     if ((e.target as HTMLElement).closest('button')) return;
     if ((e.target as HTMLElement).closest('input')) return;
+    if ((e.target as HTMLElement).classList.contains('resize-handle')) return;
 
     isDragging = true;
     startX = e.clientX;
@@ -65,13 +158,13 @@
 
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const width = containerRef.offsetWidth;
-    const height = containerRef.offsetHeight;
+    const w = containerRef.offsetWidth;
+    const h = containerRef.offsetHeight;
 
     if (newRight < 0) newRight = 0;
-    if (newRight > viewportWidth - width) newRight = viewportWidth - width;
+    if (newRight > viewportWidth - w) newRight = viewportWidth - w;
     if (newBottom < 0) newBottom = 0;
-    if (newBottom > viewportHeight - height) newBottom = viewportHeight - height;
+    if (newBottom > viewportHeight - h) newBottom = viewportHeight - h;
 
     containerRef.style.right = `${newRight}px`;
     containerRef.style.bottom = `${newBottom}px`;
@@ -85,20 +178,6 @@
     window.removeEventListener('mousemove', handleMouseMove);
     window.removeEventListener('mouseup', handleMouseUp);
   }
-
-  $: if (!$uiState.minimized && containerRef) {
-    const viewportHeight = window.innerHeight;
-    const maxHeight = Math.min(600, viewportHeight * 0.85);
-    
-    const currentBottom = parseFloat(containerRef.style.bottom) || 0;
-    
-    const projectedTop = viewportHeight - currentBottom - maxHeight;
-    
-    if (projectedTop < 24) {
-      const newBottom = Math.max(0, viewportHeight - maxHeight - 24);
-      containerRef.style.bottom = `${newBottom}px`;
-    }
-  }
 </script>
 
 <div 
@@ -106,7 +185,22 @@
   class:minimized={$uiState.minimized} 
   class:editing-mode={!!$uiState.editingRuleId && !$uiState.minimized}
   bind:this={containerRef}
+  style:width={!$uiState.minimized ? `${width}px` : null}
+  style:height={!$uiState.minimized ? `${height}px` : null}
 >
+  {#if !$uiState.minimized}
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="resize-handle left" on:mousedown={(e) => handleResizeStart(e, 'left')}></div>
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="resize-handle top" on:mousedown={(e) => handleResizeStart(e, 'top')}></div>
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="resize-handle right" on:mousedown={(e) => handleResizeStart(e, 'right')}></div>
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="resize-handle bottom" on:mousedown={(e) => handleResizeStart(e, 'bottom')}></div>
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
+    <div class="resize-handle corner" on:mousedown={(e) => handleResizeStart(e, 'corner')}></div>
+  {/if}
+
   <Header on:mousedown={handleMouseDown} />
 
   {#if !$uiState.minimized}
@@ -180,11 +274,9 @@
     
     --pm-switch-off: #444;
 
-    /* Layout */
     position: fixed;
     bottom: 24px;
     right: 24px;
-    width: 400px;
     background: var(--pm-bg);
     color: var(--pm-text-primary);
     border-radius: 12px;
@@ -192,13 +284,57 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 13px;
     line-height: 1.5;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
-    height: 600px;
-    max-height: 85vh;
     z-index: 99999;
     overflow: hidden;
+  }
+
+  .resize-handle {
+    position: absolute;
+    z-index: 100;
+    background: transparent;
+  }
+
+  .resize-handle.left {
+    top: 0;
+    bottom: 0;
+    left: 0px;
+    width: 6px;
+    cursor: ew-resize;
+  }
+
+  .resize-handle.right {
+    top: 0;
+    bottom: 0;
+    right: 0px;
+    width: 6px;
+    cursor: ew-resize;
+  }
+
+  .resize-handle.top {
+    left: 0;
+    right: 0;
+    top: 0px;
+    height: 6px;
+    cursor: ns-resize;
+  }
+
+  .resize-handle.bottom {
+    left: 0;
+    right: 0;
+    bottom: 0px;
+    height: 6px;
+    cursor: ns-resize;
+  }
+
+  .resize-handle.corner {
+    top: 0px;
+    left: 0px;
+    width: 12px;
+    height: 12px;
+    cursor: nwse-resize;
+    z-index: 101;
   }
 
   @media (prefers-color-scheme: light) {
@@ -238,21 +374,6 @@
     min-width: 140px;
     height: auto;
     background: var(--pm-bg-tertiary);
-  }
-
-  .container.editing-mode {
-    width: 800px;
-    height: 80vh;
-    max-height: 90vh;
-  }
-
-  @media (max-width: 820px) {
-    .container.editing-mode {
-      width: 95vw;
-      height: 90vh;
-      right: 2.5vw !important;
-      bottom: 5vh !important;
-    }
   }
 
   .content {
