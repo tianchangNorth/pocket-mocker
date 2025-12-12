@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { toggleRule, deleteRule } from '@/store/store';
+  import { toggleRule, deleteRule,fetchRule } from '@/store/store';
   import { uiState } from '@/lib/stores/dashboard-store';
   import Switch from '@/lib/ui/Switch.svelte';
 
@@ -31,9 +31,20 @@
         title="Delete rule"
         on:click|stopPropagation={() => deleteRule(rule.id)}
       >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-          </svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+      </button>
+
+      <button
+        class="action-btn del-btn rule-delete-btn"
+        title="fetch rule"
+        on:click|stopPropagation={() => fetchRule(rule.id)}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
       </button>
       <Switch checked={rule.enabled} onChange={() => toggleRule(rule.id)} />
     </div>

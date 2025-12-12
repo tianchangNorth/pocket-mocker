@@ -1,5 +1,6 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { updateRules as updateInterceptorRules } from '@/core';
+import { $fetch } from '@/core/utils/fetch';
 import type { MockRule } from '../core/types';
 
 const STORAGE_KEY = 'pocket_mock_rules_v1';
@@ -123,6 +124,14 @@ export const addRule = (url: string, method: string, initialResponse?: any, dela
 
 export const deleteRule = (id: string) => {
   rules.update(items => items.filter(r => r.id !== id));
+}
+
+export const fetchRule = (id: string) => {
+  const currentRules = get(rules);
+  const foundRule = currentRules.find(r => r.id === id) ?? undefined;
+  const method = foundRule?.method ?? 'GET'
+  const url = foundRule?.url ?? ''
+  $fetch(url, method)
 }
 
 export const updateRuleHeaders = (id: string, newHeadersJson: string) => {
