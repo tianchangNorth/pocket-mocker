@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.1.2 - 2025-12-12
+
+### Improvements
+
+- **Floating Window UI**:
+  - Optimized the basic style with a modern glassmorphism effect, subtle shadows, and refined border-radius.
+  - Implemented an elegant, theme-colored rotating border animation for the minimized state on hover.
+  - Improved panel resizing fluidity by disabling CSS transitions during drag operations.
+- **Toast Notifications**: Corrected toast notification positioning to be page-based, ensuring they are always centered in the viewport regardless of the floating panel's position.
+- **Rule Item Actions**: Replaced the second icon in `RuleItem.svelte` with a "send request" play icon, enhancing clarity for action buttons.
+
+### Bug Fixes
+
+- **Minimized Panel Border**: Resolved an issue where a subtle "double border" appeared around the minimized panel due to conflicting `background-clip` and `box-shadow` properties.
+
 ## v1.1.1 - 2025-12-05
 
 ### Improvements
