@@ -1,6 +1,6 @@
 import { appReady } from '@/store/store';
 import { requestLogs } from '@/store/log-store';
-import { formatRequestPayload, formatHeaders, parseBodyData } from '../utils/http';
+import { formatRequestPayload, formatHeaders, formatResponseBody, parseBodyData } from '../utils/http';
 import { findMatchingRule, resolveMockResponse, logMockRequest } from '../engine/handler';
 
 export function patchXHR() {
@@ -82,7 +82,7 @@ export function patchXHR() {
               return foundKey ? result.headers[foundKey] : null;
             };
 
-            logMockRequest(this._method, this._url, result.status, this._startTime, responseData);
+            logMockRequest(this._method, this._url, result.status, this._startTime, this._requestHeaders, responseData, this._requestBody);
 
             setTimeout(() => {
               this.dispatchEvent(new ProgressEvent('loadstart'));
@@ -131,7 +131,7 @@ export function patchXHR() {
               timestamp: Date.now(),
               duration,
               isMock: false,
-              responseBody,
+              responseBody: formatResponseBody(responseBody),
               requestPayload: formatRequestPayload(this._requestBody),
               requestHeaders: formatHeaders(this._requestHeaders)
             });

@@ -3,6 +3,7 @@ import { generateMockData } from './smart-mock';
 import { createMockRequest } from './mock-request';
 import { getActiveRules } from '../manager/rule-manager';
 import { requestLogs } from '@/store/log-store';
+import { formatHeaders, formatRequestPayload, formatResponseBody } from '../utils/http';
 
 import type { MockRule } from '../types';
 
@@ -97,7 +98,9 @@ export function logMockRequest(
   url: string,
   status: number,
   startTime: number,
-  responseBody?: any
+  requestHeaders?: any,
+  responseBody?: any,
+  requestPayload?: any
 ) {
   const duration = Math.round(performance.now() - startTime);
   requestLogs.add({
@@ -107,6 +110,8 @@ export function logMockRequest(
     timestamp: Date.now(),
     duration,
     isMock: true,
-    responseBody: typeof responseBody === 'string' ? responseBody : JSON.stringify(responseBody)
+    requestHeaders: formatHeaders(requestHeaders),
+    requestPayload: formatRequestPayload(requestPayload),
+    responseBody: formatResponseBody(responseBody)
   });
 }

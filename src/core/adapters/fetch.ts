@@ -1,6 +1,6 @@
 import { appReady } from '@/store/store';
 import { requestLogs } from '@/store/log-store';
-import { formatRequestPayload, formatHeaders, parseBodyData } from '../utils/http';
+import { formatRequestPayload, formatHeaders, formatResponseBody, parseBodyData } from '../utils/http';
 import { findMatchingRule, resolveMockResponse, logMockRequest } from '../engine/handler';
 
 export function patchFetch() {
@@ -29,11 +29,11 @@ export function patchFetch() {
       const result = await resolveMockResponse(rule, match.params, url, method, requestHeaders, bodyData);
 
       if (result.response instanceof Response) {
-        logMockRequest(method, url, result.response.status, startTime, '[Response Object]');
+        logMockRequest(method, url, result.response.status, startTime, requestHeaders, '[Response Object]', bodyData);
         return result.response;
       }
 
-      logMockRequest(method, url, result.status, startTime, result.response);
+      logMockRequest(method, url, result.status, startTime, requestHeaders, result.response, bodyData);
 
       return new Response(
         typeof result.response === 'string' ? result.response : JSON.stringify(result.response),
@@ -71,7 +71,7 @@ export function patchFetch() {
         timestamp: Date.now(),
         duration,
         isMock: false,
-        responseBody,
+        responseBody: formatResponseBody(responseBody),
         requestPayload: formatRequestPayload(bodyData),
         requestHeaders: formatHeaders(requestHeaders)
       });

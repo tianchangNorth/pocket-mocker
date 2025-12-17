@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { uiState } from '@/lib/stores/dashboard-store';
   import Header from './Header.svelte';
   import Tabs from './Tabs.svelte';
@@ -38,6 +38,55 @@
     } else {
       if (lastWidth > 0) width = lastWidth;
       if (lastHeight > 0) height = lastHeight;
+    }
+    adjustPosition();
+  }
+
+  $: if (!$uiState.minimized) {
+    adjustPosition();
+  }
+
+  async function adjustPosition() {
+    await tick();
+    if (!containerRef) return;
+
+    const rect = containerRef.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const padding = 20;
+
+    let currentRight = parseFloat(containerRef.style.right) || 0;
+    let currentBottom = parseFloat(containerRef.style.bottom) || 0;
+    let needsUpdate = false;
+
+    const maxBottom = viewportHeight - rect.height - padding;
+    if (currentBottom > maxBottom) {
+      currentBottom = Math.max(padding, maxBottom);
+      needsUpdate = true;
+    }
+
+    if (currentBottom < padding) {
+      currentBottom = padding;
+      needsUpdate = true;
+    }
+
+    const maxRight = viewportWidth - rect.width - padding;
+    if (currentRight > maxRight) {
+      currentRight = Math.max(padding, maxRight);
+      needsUpdate = true;
+    }
+
+    if (currentRight < padding) {
+      currentRight = padding;
+      needsUpdate = true;
+    }
+
+    if (needsUpdate) {
+      containerRef.style.right = `${currentRight}px`;
+      containerRef.style.bottom = `${currentBottom}px`;
+      
+      initialRight = currentRight;
+      initialBottom = currentBottom;
     }
   }
 

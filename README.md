@@ -22,10 +22,14 @@
   <a href="#installation">Installation</a>
   ·
   <a href="#quick-start">Quick Start</a>
-  .
+  ·
   <a href="#contributing--contact">Contributing & Contact</a>
   ·
-  <a href="https://github.com/tianchangNorth/pocket-mocker/discussions"> Discussions</a>
+  <a href="https://github.com/tianchangNorth/pocket-mocker/discussions">Discussions</a>
+  ·
+  <a href="https://discord.gg/cjGqnppNZW" target="_blank">
+    <strong>💬 Discord</strong>
+  </a>
 </p>
 
 <p>
@@ -135,6 +139,23 @@ Run `npm run dev`. PocketMock automatically detects the plugin environment and s
 ---
 
 ## Advanced Features
+
+### URL Pattern Matching
+
+PocketMock supports powerful URL patterns to mock complex APIs:
+
+- **Path Parameters**: `/api/users/:id` → matches `/api/users/123`, `/api/users/john`
+- **Wildcards**: `/api/*` → matches `/api/users`, `/api/users/123/posts`
+- **Mixed Patterns**: `/api/:version/users/*/profile` → matches `/api/v1/users/123/profile`
+
+Access captured parameters in mock functions:
+```javascript
+(req) => {
+  const { id, version } = req.params;
+  const { include } = req.query;
+  return { id: parseInt(id), version, includeAuthor: include === 'true' };
+}
+```
 
 ### Smart Mock Data Generation
 
