@@ -155,6 +155,23 @@ export default defineConfig({
 
 ## 进阶功能
 
+### URL 模式匹配
+
+PocketMock 支持强大的 URL 模式来模拟复杂的 API：
+
+- **路径参数**: `/api/users/:id` → 匹配 `/api/users/123`, `/api/users/john`
+- **通配符**: `/api/*` → 匹配 `/api/users`, `/api/users/123/posts`
+- **混合模式**: `/api/:version/users/*/profile` → 匹配 `/api/v1/users/123/profile`
+
+在模拟函数中获取捕获的参数：
+```javascript
+(req) => {
+  const { id, version } = req.params;
+  const { include } = req.query;
+  return { id: parseInt(id), version, includeAuthor: include === 'true' };
+}
+```
+
 ### 智能 Mock 数据生成
 
 PocketMock 内置强大的智能生成器，使用简单语法即可生成逼真的测试数据。

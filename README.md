@@ -140,6 +140,23 @@ Run `npm run dev`. PocketMock automatically detects the plugin environment and s
 
 ## Advanced Features
 
+### URL Pattern Matching
+
+PocketMock supports powerful URL patterns to mock complex APIs:
+
+- **Path Parameters**: `/api/users/:id` → matches `/api/users/123`, `/api/users/john`
+- **Wildcards**: `/api/*` → matches `/api/users`, `/api/users/123/posts`
+- **Mixed Patterns**: `/api/:version/users/*/profile` → matches `/api/v1/users/123/profile`
+
+Access captured parameters in mock functions:
+```javascript
+(req) => {
+  const { id, version } = req.params;
+  const { include } = req.query;
+  return { id: parseInt(id), version, includeAuthor: include === 'true' };
+}
+```
+
 ### Smart Mock Data Generation
 
 PocketMock includes a powerful **Smart Mock Generator** that allows you to create realistic test data with simple template syntax.
