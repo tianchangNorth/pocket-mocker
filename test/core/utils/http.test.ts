@@ -1,38 +1,39 @@
 import { describe, it, expect } from 'vitest';
-import { formatRequestPayload, formatHeaders, parseBodyData } from '../../../src/core/utils/http';
+import { parseBodyData, formatJSON } from '../../../src/core/utils/http';
 
 describe('HTTP Utils', () => {
   describe('formatRequestPayload', () => {
     it('should return undefined for null or undefined bodyData', () => {
-      expect(formatRequestPayload(null)).toBeUndefined();
-      expect(formatRequestPayload(undefined)).toBeUndefined();
+      expect(formatJSON(null)).toBeUndefined();
+      expect(formatJSON(undefined)).toBeUndefined();
     });
 
     it('should return string as is if it is not JSON', () => {
       const payload = 'plain text';
-      expect(formatRequestPayload(payload)).toBe(payload);
+      expect(formatJSON(payload)).toBe(payload);
     });
 
-    it('should return JSON string as is if it is valid JSON', () => {
+    it('should format JSON string if it is valid JSON', () => {
       const payload = '{"key": "value"}';
-      expect(formatRequestPayload(payload)).toBe(payload);
+      const expected = JSON.stringify(JSON.parse(payload), null, 2);
+      expect(formatJSON(payload)).toBe(expected);
     });
 
     it('should stringify an object', () => {
       const payload = { key: 'value', num: 123 };
-      expect(formatRequestPayload(payload)).toBe(JSON.stringify(payload, null, 2));
+      expect(formatJSON(payload)).toBe(JSON.stringify(payload, null, 2));
     });
 
     it('should stringify an array', () => {
       const payload = [{ a: 1 }, { b: 2 }];
-      expect(formatRequestPayload(payload)).toBe(JSON.stringify(payload, null, 2));
+      expect(formatJSON(payload)).toBe(JSON.stringify(payload, null, 2));
     });
   });
 
   describe('formatHeaders', () => {
     it('should return undefined for null or undefined headers', () => {
-      expect(formatHeaders(null)).toBeUndefined();
-      expect(formatHeaders(undefined)).toBeUndefined();
+      expect(formatJSON(null)).toBeUndefined();
+      expect(formatJSON(undefined)).toBeUndefined();
     });
 
     it('should stringify a Headers object', () => {
@@ -40,12 +41,12 @@ describe('HTTP Utils', () => {
       headers.append('Content-Type', 'application/json');
       headers.append('X-Custom', 'Value');
       const expected = JSON.stringify({ 'content-type': 'application/json', 'x-custom': 'Value' }, null, 2);
-      expect(formatHeaders(headers)).toBe(expected);
+      expect(formatJSON(headers)).toBe(expected);
     });
 
     it('should stringify a plain object', () => {
       const headers = { 'Content-Type': 'application/xml', 'Accept': '*/*' };
-      expect(formatHeaders(headers)).toBe(JSON.stringify(headers, null, 2));
+      expect(formatJSON(headers)).toBe(JSON.stringify(headers, null, 2));
     });
   });
 

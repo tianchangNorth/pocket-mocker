@@ -8,6 +8,12 @@ export function formatJSON(response: any): string | undefined {
     } catch {
       return response;
     }
+  } else if (response instanceof Headers) {
+    const headersObj: Record<string, string> = {};
+    response.forEach((value, key) => {
+      headersObj[key.toLowerCase()] = value;
+    });
+    return JSON.stringify(headersObj, null, 2);
   } else if (typeof response === 'object') {
     return JSON.stringify(response, null, 2);
   } else if (typeof response === 'number' || typeof response === 'boolean') {
