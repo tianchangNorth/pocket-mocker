@@ -165,13 +165,16 @@ PocketMock includes a powerful **Smart Mock Generator** that allows you to creat
 
 ```javascript
 {
-  "user|10": {                        // → Generate 10 users
-    "id": "@guid",                    // → "550e8400-e29b-41d4-a716-446655440000"
-    "name": "@name",                  // → "John"
-    "email": "@email",                // → "john.smith@example.com"
-    "avatar": "@image(100x100)",      // → "https://via.placeholder.com/100x100"
-    "age": "@integer(18,60)",        // → 25
-    "role": "@pick(admin,user)"      // → "admin"
+  "user": {                           // → Generate user data
+    "id": "@guid",                   // → "550e8400-e29b-41d4-a716-446655440000"
+    "name": "@name",                 // → "John"
+    "username": "@username",       // → "brightpanda"
+    "email": "@email",               // → "john.smith@example.com"
+    "avatar": "@image(100x100)",     // → "https://via.placeholder.com/100x100"
+    "age": "@integer(18,60)",       // → 25
+    "role": "@pick(admin,user)",     // → "admin"
+    "ip": "@ip",                  // → "192.168.1.1"
+    "ipv6": "@ip(v6)"                // → "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
   }
 }
 ```
@@ -182,7 +185,9 @@ PocketMock includes a powerful **Smart Mock Generator** that allows you to creat
 |--------|----------|---------|
 | `@guid` | Unique ID | `"f47ac..."` |
 | `@name` | Random Name | `"John"` |
+| `@username` | Random Username | `"cool_coder"` |
 | `@email` | Email Address | `"user@example.com"` |
+| `@ip` | Random IP (v4/v6) | `@ip` → `192.168.1.1` |
 | `@integer(min,max)` | Random Integer | `@integer(1,100)` → `42` |
 | `@pick(A,B,C)` | Random Choice | `@pick(apple,banana)` → `"apple"` |
 | `@image(100x100)` | Placeholder Image | `"https://via.placeholder.com/100x100"` |
@@ -199,7 +204,10 @@ PocketMock includes a powerful **Smart Mock Generator** that allows you to creat
 | `@boolean` | Random Boolean | `true` |
 | `@string(length)` | Random String | `@string(8)` → `"aX9bK2pQ"` |
 | **Personal** |
+| `@username(separator, randomDigits, maxLength, dictType)` | Username | `@username("-", 2, 20)` |
 | `@phone(countryCode)` | Phone Number | `@phone(+1)` |
+| **Network** |
+| `@ip(version)` | IP Address | `@ip(v6/v4/6/4)` → IPv(x), `@ip` → IPv4 |
 | **Date/Time** |
 | `@date(start,end)` | Random Date | `@date(2023-01-01,2024-12-31)` |
 | **Other** |

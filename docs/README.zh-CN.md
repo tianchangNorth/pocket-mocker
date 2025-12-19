@@ -180,13 +180,16 @@ PocketMock 内置强大的智能生成器，使用简单语法即可生成逼真
 
 ```javascript
 {
-  "user": {                            // → 生成 10 个用户
+  "user": {                            // → 生成用户数据
     "id": "@guid",                    // → "550e8400-e29b-41d4"
     "name": "@name",                  // → "张三"
+    "username": "@username",        // → "brightpanda"
     "email": "@email",                // → "zhangsan@example.com"
     "avatar": "@image(100x100)",      // → "https://via.placeholder.com/100x100"
     "age": "@integer(18,60)",        // → 25
-    "role": "@pick(管理员,用户)"        // → "管理员"
+    "role": "@pick(管理员,用户)",       // → "管理员"
+    "ip": "@ip()",                   // → "192.168.1.1"
+    "ipv6": "@ip(v6)"                 // → "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
   }
 }
 ```
@@ -197,7 +200,9 @@ PocketMock 内置强大的智能生成器，使用简单语法即可生成逼真
 |------|------|------|
 | `@guid` | 唯一标识 | `"f47ac..."` |
 | `@name` | 随机姓名 | `"张三"` |
+| `@username` | 随机用户名 | `"cool_coder"` |
 | `@email` | 邮箱地址 | `"user@example.com"` |
+| `@ip` | 随机 IP (v4/v6) | `@ip` → `192.168.1.1` |
 | `@integer(min,max)` | 随机整数 | `@integer(1,100)` → `42` |
 | `@pick(A,B,C)` | 随机选择 | `@pick(苹果,香蕉)` → `"苹果"` |
 | `@image(100x100)` | 占位图片 | `"https://via.placeholder.com/100x100"` |
@@ -214,7 +219,10 @@ PocketMock 内置强大的智能生成器，使用简单语法即可生成逼真
 | `@boolean` | 随机布尔值 | `true` |
 | `@string(length)` | 随机字符串 | `@string(8)` → `"aX9bK2pQ"` |
 | **个人信息** |
+| `@username(separator, randomDigits, maxLength, dictType)` | 用户名 | `@username("-", 2, 20)` |
 | `@phone(countryCode)` | 电话号码 | `@phone(+86)` |
+| **网络** |
+| `@ip(version)` | IP 地址 | `@ip(v6/v4/6/4)` → IPv(x), `@ip` → IPv4 |
 | **日期时间** |
 | `@date(start,end)` | 随机日期 | `@date(2023-01-01,2024-12-31)` |
 | **其他** |
