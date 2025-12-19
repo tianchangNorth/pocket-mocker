@@ -197,8 +197,35 @@ app.innerHTML = `
 // ==========================================
 // 5. Styling (Cyberpunk/Clean Theme)
 // ==========================================
+
+
 const style = document.createElement('style');
 style.textContent = `
+  :host::-webkit-scrollbar,
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  :host::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-track {
+    background: var(--pm-bg-secondary);
+    border-radius: 4px;
+  }
+  :host::-webkit-scrollbar-thumb,
+  ::-webkit-scrollbar-thumb {
+    background: var(--pm-text-secondary); 
+    border-radius: 4px;
+    border: 2px solid var(--pm-bg-secondary); 
+  }
+  :host::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--pm-text-primary);
+  }
+  :host::-webkit-scrollbar-corner,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+    
   :root {
     --bg-dark: #0f172a;
     --card-bg: #1e293b;
@@ -209,6 +236,15 @@ style.textContent = `
     --danger: #ef4444;
     --success: #22c55e;
     --border: #334155;
+
+    --pm-bg: rgba(26, 26, 26, 0.75);
+    --pm-bg-secondary: rgba(37, 37, 37, 0.6); 
+    --pm-bg-tertiary: rgba(42, 42, 42, 0.6);
+    --pm-border: rgba(255,255,255,0.1);
+    --pm-border-focus: rgba(255,255,255,0.25);
+    --pm-text-primary: #f0f0f0;
+    --pm-text-secondary: #9ca3af;
+    --pm-text-placeholder: #6b7280;
   }
 
   body {
@@ -490,8 +526,8 @@ function log(method: string, url: string, status: number, data: any, time: numbe
   entry.className = `log-entry ${isError ? 'error' : 'success'}`;
 
 
-  const formattedData = typeof data === 'string' 
-    ? data 
+  const formattedData = typeof data === 'string'
+    ? data
     : JSON.stringify(data, null, 2);
 
   entry.innerHTML = `
@@ -503,7 +539,7 @@ function log(method: string, url: string, status: number, data: any, time: numbe
     </div>
     <div class="log-json"></div>
   `;
-  
+
   const jsonDiv = entry.querySelector('.log-json')!;
   jsonDiv.textContent = formattedData;
 
