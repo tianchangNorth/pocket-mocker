@@ -21,12 +21,16 @@ export const uiState = (() => {
     networkFilterText: "",
     networkTypeFilter: 'all' as 'all' | 'mock' | 'real',
     expandedLogId: null as string | null,
-    activeLogDetailTab: 'response' as NetworkDetailTab
+    activeLogDetailTab: 'response' as NetworkDetailTab,
+    
+    panelPosition: { right: 24, bottom: 24 },
+    panelSize: { width: 400, height: 600 }
   };
 
   const storedState = loadUIState('dashboard', {});
   const initialState = { ...defaultState, ...storedState };
 
+  // Ensure transient states are reset
   initialState.editingRuleId = null;
   initialState.showAddRulePanel = false;
   initialState.expandedLogId = null;
@@ -63,6 +67,9 @@ export const uiState = (() => {
     setLogDetailTab: (tab: NetworkDetailTab) => update(s => ({ ...s, activeLogDetailTab: tab })),
     resetNetwork: () => update(s => ({
       ...s, expandedLogId: null
-    }))
+    })),
+
+    setPanelPosition: (right: number, bottom: number) => update(s => ({ ...s, panelPosition: { right, bottom } })),
+    setPanelSize: (width: number, height: number) => update(s => ({ ...s, panelSize: { width, height } }))
   };
 })();

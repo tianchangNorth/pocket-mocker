@@ -13,7 +13,8 @@ interface UIState {
   networkTypeFilter?: string;
   expandedLogId?: string | null;
   activeLogDetailTab?: string;
-  panelPosition?: { x: number; y: number };
+  panelPosition?: { right: number; bottom: number };
+  panelSize?: { width: number; height: number };
 }
 
 export function saveUIState(key: string, stateObject: Partial<UIState>) {

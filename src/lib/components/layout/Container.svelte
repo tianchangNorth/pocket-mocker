@@ -9,15 +9,15 @@
   let resizeDirection = '';
   let startX = 0;
   let startY = 0;
-  let initialRight = 0; 
-  let initialBottom = 0;
+  let initialRight = $uiState.panelPosition.right;
+  let initialBottom = $uiState.panelPosition.bottom;
   let initialWidth = 0;
   let initialHeight = 0;
   let hasMoved = false;
   let containerRef: HTMLDivElement;
   
-  let width = 400;
-  let height = 600;
+  let width = $uiState.panelSize.width;
+  let height = $uiState.panelSize.height;
   
   let lastWidth = 0;
   let lastHeight = 0;
@@ -57,6 +57,15 @@
 
     let currentRight = parseFloat(containerRef.style.right) || 0;
     let currentBottom = parseFloat(containerRef.style.bottom) || 0;
+    
+    // If we just mounted or expanded, try to respect the store value first if valid
+    if (initialRight > 0 && Math.abs(currentRight - initialRight) > 1) {
+       currentRight = initialRight;
+    }
+    if (initialBottom > 0 && Math.abs(currentBottom - initialBottom) > 1) {
+       currentBottom = initialBottom;
+    }
+
     let needsUpdate = false;
 
     const maxBottom = viewportHeight - rect.height - padding;
@@ -81,28 +90,27 @@
       needsUpdate = true;
     }
 
-    if (needsUpdate) {
+    if (needsUpdate || containerRef.style.right === '' || containerRef.style.bottom === '') {
       containerRef.style.right = `${currentRight}px`;
       containerRef.style.bottom = `${currentBottom}px`;
       
       initialRight = currentRight;
       initialBottom = currentBottom;
+      
+      // Update store if corrected
+      if (needsUpdate) {
+         uiState.setPanelPosition(currentRight, currentBottom);
+      }
     }
   }
 
   onMount(() => {
     if (containerRef) {
-      const rect = containerRef.getBoundingClientRect();
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      
-      const right = viewportWidth - rect.right;
-      const bottom = viewportHeight - rect.bottom;
-      
+      // Apply initial state from store
       containerRef.style.top = 'auto';
       containerRef.style.left = 'auto';
-      containerRef.style.right = `${right}px`;
-      containerRef.style.bottom = `${bottom}px`;
+      containerRef.style.right = `${initialRight}px`;
+      containerRef.style.bottom = `${initialBottom}px`;
     }
   });
 
@@ -169,6 +177,20 @@
     isResizing = false;
     if (containerRef) {
        containerRef.style.transition = '';
+       
+       // Save new state
+       const rect = containerRef.getBoundingClientRect();
+       const viewportWidth = window.innerWidth;
+       const viewportHeight = window.innerHeight;
+       const newRight = viewportWidth - rect.right;
+       const newBottom = viewportHeight - rect.bottom;
+       
+       // Update local state for next interaction
+       initialRight = newRight;
+       initialBottom = newBottom;
+
+       uiState.setPanelSize(width, height);
+       uiState.setPanelPosition(newRight, newBottom);
     }
     window.removeEventListener('mousemove', handleResizeMove);
     window.removeEventListener('mouseup', handleResizeEnd);
@@ -233,7 +255,17 @@
   function handleMouseUp() {
     if (isDragging && !hasMoved && $uiState.minimized) {
       uiState.toggleMinimized();
+    } else if (hasMoved) {
+       // Save position after drag ends
+       const currentRight = parseFloat(containerRef.style.right) || 0;
+       const currentBottom = parseFloat(containerRef.style.bottom) || 0;
+       uiState.setPanelPosition(currentRight, currentBottom);
+       
+       // Update local state
+       initialRight = currentRight;
+       initialBottom = currentBottom;
     }
+    
     isDragging = false;
     if (containerRef) {
        containerRef.style.transition = '';
