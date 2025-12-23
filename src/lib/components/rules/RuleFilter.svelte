@@ -3,7 +3,8 @@
   import Button from '@/lib/ui/Button.svelte';
   import Input from '@/lib/ui/Input.svelte';
   import Select from '@/lib/ui/Select.svelte';
-
+  import { addGroup } from '@/store/store';
+  
   let filterText = $uiState.ruleFilterText;
   let methodFilter = $uiState.ruleMethodFilter;
   let statusFilter = $uiState.ruleStatusFilter;
@@ -19,6 +20,10 @@
     methodFilter = "ALL";
     statusFilter = "ALL";
     uiState.resetRuleFilters();
+  }
+
+  function handleAddGroup() {
+    addGroup('New Group');
   }
 </script>
 
@@ -45,6 +50,13 @@
         </svg>
       </Button>
     {/if}
+  <Button icon on:click={handleAddGroup} title="Add New Group">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+        <line x1="12" y1="11" x2="12" y2="17"></line>
+        <line x1="9" y1="14" x2="15" y2="14"></line>
+    </svg>
+  </Button>
 </div>
 
 <style>
