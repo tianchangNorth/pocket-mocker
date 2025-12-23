@@ -224,6 +224,7 @@
   .group-content {
     padding-left: 12px;
     position: relative;
+    padding-bottom: 2px;
   }
   
   .group-content::before {

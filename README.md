@@ -19,6 +19,8 @@
     <strong>Live Demo</strong>
   </a>
   ·
+  <a href="docs/USER_MANUAL.md"><strong>📖 User Manual</strong></a>
+  ·
   <a href="#installation">Installation</a>
   ·
   <a href="#quick-start">Quick Start</a>
@@ -37,6 +39,11 @@
 </p>
 
 </div>
+
+## Documentation
+
+- **[English User Manual](docs/USER_MANUAL.md)**: Detailed guide on features, syntax, and usage.
+- **[中文用户手册](docs/USER_MANUAL.zh-CN.md)**: 功能、语法及使用指南。
 
 ## What is PocketMocker?
 

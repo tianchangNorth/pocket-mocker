@@ -19,17 +19,11 @@
     <strong>🚀 在线演示</strong>
   </a>
   ·
+  <a href="docs/USER_MANUAL.zh-CN.md"><strong>📖 用户手册</strong></a>
+  ·
   <a href="#安装">安装</a>
   ·
   <a href="#快速开始">快速开始</a>
-  ·
-  <a href="#贡献与联系">贡献与联系</a>
-  ·
-  <a href="https://github.com/tianchangNorth/pocket-mocker/discussions">讨论</a>
-  ·
-  <a href="https://discord.gg/cjGqnppNZW" target="_blank">
-    <strong>💬 Discord</strong>
-  </a>
 </p>
 
 <p>
@@ -37,6 +31,11 @@
 </p>
 
 </div>
+
+## 文档
+
+- **[中文用户手册](docs/USER_MANUAL.zh-CN.md)**: 功能、语法及使用详细指南。
+- **[English User Manual](docs/USER_MANUAL.md)**: Detailed guide on features, syntax, and usage.
 
 ## PocketMocker 是什么？
 
