@@ -17,9 +17,9 @@ This document outlines the development plan for PocketMocker. Our goal is to kee
 - [x] **Visual & UX Polish** (v1.2.0)
     - Glassmorphism effect and animations for floating window.
     - Toast notification system.
-- [ ] **Rule Grouping & Environment Management**
+- [x] **Rule Grouping & Environment Management**
     - Introduce "Groups" or folders to organize rules, solving the mess when rule count grows.
-    - Add "Environment" switching (e.g., Dev, Staging, Error-Test) to toggle entire sets of rules instantly.
+    - Add "Environment" switching (e.g., Dev, Staging, Error-Test) to toggle entire sets of rules instantly.(To be determined)
 - [ ] **Easy Config Sharing**
     - Implement "Copy All Config" functionality, allowing Local Mode users to quickly share rules with colleagues or backup to clipboard.
 - [ ] **UX Improvements**
