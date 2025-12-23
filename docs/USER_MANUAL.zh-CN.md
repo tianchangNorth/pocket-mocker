@@ -77,7 +77,7 @@ export default defineConfig({
 ### 主控制面板
 
 <div align="center">
-  <img src="https://res.oafimg.cn/-/42ccdd70c1b9d346/img2.png" alt="展开后的主控制面板" width="600">
+  <img src="https://res.oafimg.cn/-/42ccdd70c1b9d346/img2.png" alt="展开后的主控制面板" width="400">
 </div>
 
 面板主要分为三个区域：
@@ -106,7 +106,7 @@ export default defineConfig({
 点击任意规则即可进入编辑模式。
 
 <div align="center">
-  <img src="https://res.oafimg.cn/-/056c8014b2ae4226/img3.png" alt="规则编辑界面" width="600">
+  <img src="https://res.oafimg.cn/-/056c8014b2ae4226/img3.png" alt="规则编辑界面" width="400">
 </div>
 
 - **URL**: 请求路径，支持模式匹配。
@@ -124,7 +124,7 @@ export default defineConfig({
 当规则较多时，可以使用分组进行管理。
 
 <div align="center">
-  <img src="https://res.oafimg.cn/-/2a943d894a3c9a5b/img4.png" alt="规则列表界面" width="600">
+  <img src="https://res.oafimg.cn/-/2a943d894a3c9a5b/img4.png" alt="规则列表界面" width="400">
 </div>
 
 1.  点击工具栏上的 **文件夹图标** 新建分组。
@@ -223,7 +223,7 @@ PocketMocker 的编辑器具有智能识别功能。当您在 **Body** 编辑器
 切换到 **Network** 标签页，PocketMocker 会记录所有的 fetch 和 XMLHttpRequest 请求（无论是否被 Mock）。
 
 <div align="center">
-  <img src="https://res.oafimg.cn/-/ecf6b55c25c6a035/img5.png" alt="Network 面板请求列表" width="600">
+  <img src="https://res.oafimg.cn/-/ecf6b55c25c6a035/img5.png" alt="Network 面板请求列表" width="400">
 </div>
 
 - **查看详情**: 点击列表项，展开查看完整的 Request Headers, Body 和 Response Body。

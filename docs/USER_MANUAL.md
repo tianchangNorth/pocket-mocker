@@ -77,7 +77,7 @@ After starting your project, you'll see the PocketMocker floating capsule at the
 ### Main Control Panel
 
 <div align="center">
-  <img src="https://res.oafimg.cn/-/42ccdd70c1b9d346/img2.png" alt="Expanded Main Control Panel" width="600">
+  <img src="https://res.oafimg.cn/-/42ccdd70c1b9d346/img2.png" alt="Expanded Main Control Panel" width="400">
 </div>
 
 The panel is divided into three main areas:
@@ -106,7 +106,7 @@ You can create rules in several ways:
 Click any rule to enter edit mode.
 
 <div align="center">
-  <img src="https://res.oafimg.cn/-/056c8014b2ae4226/img3.png" alt="Rule Edit Interface" width="600">
+  <img src="https://res.oafimg.cn/-/056c8014b2ae4226/img3.png" alt="Rule Edit Interface" width="400">
 </div>
 
 - **URL**: Request path, supports pattern matching.
@@ -124,7 +124,7 @@ Click any rule to enter edit mode.
 When you have many rules, use groups to manage them.
 
 <div align="center">
-  <img src="https://res.oafimg.cn/-/2a943d894a3c9a5b/img4.png" alt="Rule List with Groups" width="600">
+  <img src="https://res.oafimg.cn/-/2a943d894a3c9a5b/img4.png" alt="Rule List with Groups" width="400">
 </div>
 
 1.  Click the **Folder Icon** on the toolbar to create a new group.
@@ -223,7 +223,7 @@ PocketMocker's editor features smart detection. When you write a JavaScript func
 Switch to the **Network** tab, where PocketMocker records all fetch and XMLHttpRequest requests (whether mocked or not).
 
 <div align="center">
-  <img src="https://res.oafimg.cn/-/ecf6b55c25c6a035/img5.png" alt="Network Panel Request List" width="600">
+  <img src="https://res.oafimg.cn/-/ecf6b55c25c6a035/img5.png" alt="Network Panel Request List" width="400">
 </div>
 
 - **View Details**: Click a list item to expand and view full Request Headers, Body, and Response Body.
