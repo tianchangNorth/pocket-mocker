@@ -25,9 +25,12 @@
   let adjustedY = 0;
 
   $: if (visible && menuElement) {
-    // 移动到 body 确保不被遮挡
-    if (menuElement.parentElement !== document.body) {
-        document.body.appendChild(menuElement);
+    // 移动到 correct root (ShadowRoot or body) 确保不被遮挡且保留样式
+    const root = menuElement.getRootNode();
+    const target = root instanceof ShadowRoot ? root : document.body;
+    
+    if (menuElement.parentElement !== target) {
+        target.appendChild(menuElement);
     }
     tick().then(() => {
       adjustPosition();
@@ -37,10 +40,10 @@
     removeListeners();
   }
 
-  // 组件销毁时从 body 移除
+  // 组件销毁时移除
   onDestroy(() => {
-    if (menuElement && menuElement.parentElement === document.body) {
-        document.body.removeChild(menuElement);
+    if (menuElement && menuElement.parentElement) {
+        menuElement.parentElement.removeChild(menuElement);
     }
     removeListeners();
   });

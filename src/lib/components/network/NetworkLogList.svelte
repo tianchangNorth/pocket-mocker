@@ -24,7 +24,7 @@
   $: menuItems = [
     { label: 'Copy URL', action: 'copy-url' },
     { label: 'Copy Response', action: 'copy-response', disabled: !selectedLog?.responseBody },
-    { label: 'Copy as cURL', action: 'copy-curl' },
+    // { label: 'Copy as cURL', action: 'copy-curl' },
     { type: 'separator' },
     { label: 'Add to Mock Rules', action: 'create-rule', disabled: selectedLog?.isMock }
   ] as MenuItem[];
@@ -32,7 +32,6 @@
   async function handleMenuRequest(event: CustomEvent) {
     const { mouseEvent, log } = event.detail;
     
-    // Close first to ensure reactivity
     menuVisible = false;
     await tick();
     
@@ -75,9 +74,13 @@
   }
 
   function generateCurl(log: any): string {
-    let curl = `curl -X ${log.method} '${log.url}'`;
-    
-    // Explicit Headers from request
+    let fullUrl = log.url;
+    if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+      fullUrl = window.location.origin + (fullUrl.startsWith('/') ? '' : '/') + fullUrl;
+    }
+
+    let curl = `curl '${fullUrl}'`;
+
     let headers = log.requestHeaders;
     if (typeof headers === 'string') {
       try {
@@ -95,31 +98,25 @@
       });
     }
 
-    // Auto-append browser headers if not already present
-    // 1. User-Agent
     if (!headerKeys.has('user-agent')) {
       curl += ` \\\n  -H 'User-Agent: ${navigator.userAgent}'`;
     }
 
-    // 2. Cookie (only non-HttpOnly cookies are visible to JS)
     if (!headerKeys.has('cookie') && document.cookie) {
       curl += ` \\\n  -H 'Cookie: ${document.cookie}'`;
     }
 
-    // 3. Referer
     if (!headerKeys.has('referer')) {
       curl += ` \\\n  -H 'Referer: ${window.location.href}'`;
     }
-    
-    // 4. Origin (usually for non-GET requests)
+
     if (!headerKeys.has('origin') && log.method !== 'GET' && log.method !== 'HEAD') {
       curl += ` \\\n  -H 'Origin: ${window.location.origin}'`;
     }
 
-    // Body
     if (log.requestBody && log.method !== 'GET' && log.method !== 'HEAD') {
       const body = typeof log.requestBody === 'string' ? log.requestBody : JSON.stringify(log.requestBody);
-      curl += ` \\\n  -d '${body.replace(/'/g, "'\\''")}'`;
+      curl += ` \\\n  --data-raw '${body.replace(/'/g, "'\\''")}'`;
     }
 
     return curl;
