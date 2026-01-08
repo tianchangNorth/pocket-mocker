@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   import { requestLogs } from '@/store/log-store';
   import { addRule } from '@/store/store';
   import { uiState } from '@/lib/stores/dashboard-store';
@@ -7,6 +8,8 @@
 
   export let log: any;
   export let expanded: boolean = false;
+
+  const dispatch = createEventDispatcher();
 
   function createRuleFromLog(log: any) {
     let responseBody = log.responseBody;
@@ -26,6 +29,12 @@
     uiState.setMainTab('rules');
     showToast("Rule created from network log", "success");
   }
+
+  function handleContextMenu(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch('menuRequest', { mouseEvent: e, log });
+  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -35,6 +44,7 @@
   class:is-mock={log.isMock}
   class:expanded={expanded}
   on:click={() => uiState.toggleLogDetails(log.id)}
+  on:contextmenu={handleContextMenu}
 >
   <div class="log-header">
     <span class="status-badge" class:success={log.status >= 200 && log.status < 300} class:error={log.status >= 400}>{log.status}</span>

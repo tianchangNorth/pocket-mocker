@@ -2,6 +2,7 @@
   import { deleteRule, updateRuleResponse, updateRuleHeaders, updateRuleUrl, updateRuleMethod, updateRuleStatus, updateRuleDelay, updateRuleGroup, groups } from '@/store/store';
   import { uiState } from '@/lib/stores/dashboard-store';
   import { showToast } from '@/lib/ui/toast-store';
+  import { convertRuleToPostman } from '@/core/utils/exporter';
   import Button from '@/lib/ui/Button.svelte';
   import Input from '@/lib/ui/Input.svelte';
   import Select from '@/lib/ui/Select.svelte';
@@ -103,6 +104,16 @@
       showToast("Invalid JSON, cannot format", "error");
     }
   }
+
+  async function copyPostmanConfig() {
+    try {
+      const config = convertRuleToPostman(rule);
+      await navigator.clipboard.writeText(config);
+      showToast("Postman config copied to clipboard", "success");
+    } catch (e) {
+      showToast("Failed to copy", "error");
+    }
+  }
 </script>
 
 <div class="editor-panel">
@@ -146,6 +157,12 @@
       >Headers</button>
     </div>
     <div class="editor-actions">
+        <button class="action-btn" title="Copy Postman Config" on:click={copyPostmanConfig}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+          </svg>
+        </button>
         <button class="action-btn" title="Format JSON" on:click={formatJSON}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 10H3M21 6H3M21 14H3M21 18H3"/>

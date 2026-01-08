@@ -260,24 +260,23 @@ You are not limited to static JSON. You can write JavaScript functions to genera
 }
 ```
 
-### Config Import
+### Import & Export
 
-Import mock rules directly from popular API documentation formats with auto-conversion.
+Seamlessly integrate with your existing API workflow.
 
-- **Supported Formats**: Postman Collection v2.1.0, OpenAPI 3.0 (Swagger)
-- **Smart Conversion**:
-  - `user_id` -> `@guid`
-  - `avatar` -> `@image`
-  - `{{baseUrl}}/users` -> `/users`
-
-**How to use**: Click the "Import" button in the dashboard header and select your JSON file.
+- **Import**: Import mock rules directly from **Postman Collection (v2.1)** and **OpenAPI 3.0 (Swagger)** files.
+  - Smart conversion automatically maps fields like `user_id` to `@guid`.
+- **Export**: Export any mock rule to **Postman JSON** format directly from the rule editor, making it easy to share or test in other tools.
 
 ### Comprehensive Network Panel
 
 The built-in Network panel logs all network requests (both mocked and real) in real-time, providing powerful debugging capabilities:
 
 - **View Details**: Click logs to view full Request/Response Body.
-- **One-Click Mock**: Click the "Mock" button on any log to instantly convert a real request into a mock rule.
+- **Context Menu**: Right-click on any log to:
+  - **Copy URL/Response**: Quickly copy data to clipboard.
+  - **Copy as cURL**: Generate a cURL command to reproduce the request in terminal.
+  - **Add to Mock Rules**: Instantly convert a real request into a mock rule.
 - **Filter**: Filter logs by URL, Method, or Mock status.
 
 ---

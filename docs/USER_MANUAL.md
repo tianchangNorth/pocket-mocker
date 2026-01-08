@@ -227,6 +227,10 @@ Switch to the **Network** tab, where PocketMocker records all fetch and XMLHttpR
 </div>
 
 - **View Details**: Click a list item to expand and view full Request Headers, Body, and Response Body.
+- **Context Menu**: Right-click on any log to:
+  - **Copy URL/Response**: Quickly copy data to clipboard.
+  - **Copy as cURL**: Generate a cURL command to reproduce the request in terminal.
+  - **Add to Mock Rules**: Instantly convert a real request into a mock rule.
 - **One-click Mock**: Click the **Mock** button on the right of a log. The system automatically extracts the URL, Method, and Response to create a new Mock rule. This is the fastest way to create rules!
 - **Status Markers**:
     - **MOCK**: Logs with a blue left border and a "MOCK" tag indicate the request was intercepted.
@@ -235,10 +239,12 @@ Switch to the **Network** tab, where PocketMocker records all fetch and XMLHttpR
 
 ---
 
-## Importing Configurations
+## Import & Export
 
-PocketMocker supports importing configurations from popular API documentation tools.
+PocketMocker seamlessly integrates with your existing API workflow.
 
+### Import
+Supports importing configurations from popular API documentation tools:
 1. Click the **Import** icon in the header (folder with arrow).
 2. Select an exported JSON file.
 3. The system will automatically convert and generate Mock rules with Smart syntax.
@@ -246,6 +252,10 @@ PocketMocker supports importing configurations from popular API documentation to
 **Supported Formats**:
 - Postman Collection (v2.1)
 - OpenAPI 3.0 (Swagger)
+
+### Export
+You can export any mock rule to Postman JSON format directly from the rule editor, making it easy to share or test in other tools.
+- In the rule editor, click the export button to download the JSON file.
 
 ---
 

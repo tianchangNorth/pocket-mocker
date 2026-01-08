@@ -227,6 +227,10 @@ PocketMocker 的编辑器具有智能识别功能。当您在 **Body** 编辑器
 </div>
 
 - **查看详情**: 点击列表项，展开查看完整的 Request Headers, Body 和 Response Body。
+- **右键菜单**: 在任意日志上右键单击即可：
+  - **复制 URL/响应**: 快速复制数据到剪贴板。
+  - **复制为 cURL**: 生成 cURL 命令以便在终端重现请求。
+  - **添加到 Mock 规则**: 即时将真实请求转换为 Mock 规则。
 - **一键 Mock**: 点击日志右侧的 **Mock** 按钮。系统会自动提取该请求的 URL、Method 和 Response，生成一条新的 Mock 规则。这是最快的规则创建方式！
 - **状态标记**:
     - **MOCK**: 带有蓝色左边框和 "MOCK" 标签的日志，表示该请求已被拦截。
@@ -235,10 +239,12 @@ PocketMocker 的编辑器具有智能识别功能。当您在 **Body** 编辑器
 
 ---
 
-## 导入配置
+## 导入与导出
 
-PocketMocker 支持从常见的 API 文档工具导入配置。
+PocketMocker 支持无缝集成现有的 API 工作流。
 
+### 导入
+支持从常见的 API 文档工具导入配置：
 1. 点击顶部栏的 **Import** 图标（文件夹箭头）。
 2. 选择导出的 JSON 文件。
 3. 系统会自动转换并生成带智能语法的 Mock 规则。
@@ -246,6 +252,10 @@ PocketMocker 支持从常见的 API 文档工具导入配置。
 **支持格式**:
 - Postman Collection (v2.1)
 - OpenAPI 3.0 (Swagger)
+
+### 导出
+您可以将 Mock 规则导出为 Postman JSON 格式，方便分享或在其他工具中测试。
+- 在规则编辑器中，点击导出按钮即可下载 JSON 文件。
 
 ---
 
