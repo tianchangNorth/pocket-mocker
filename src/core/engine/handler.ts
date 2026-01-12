@@ -45,6 +45,7 @@ export async function resolveMockResponse(
         const evaluated = new Function('return ' + resolvedResponse)();
         resolvedResponse = evaluated;
       } catch (e) {
+        console.error('[PocketMock] Error generating mock data:', e);
       }
     }
   }
@@ -53,8 +54,8 @@ export async function resolveMockResponse(
     const mockRequest = await createMockRequest(url, method, requestHeaders, bodyData, matchParams);
     try {
       resolvedResponse = await Promise.resolve(resolvedResponse(mockRequest));
-    } catch (e) {
-      resolvedResponse = { status: 500, body: { error: 'Mock function execution failed' } };
+    } catch (e: any) {
+      resolvedResponse = { status: 500, body: { error: 'Mock function execution failed', details: e.message } };
     }
   }
 

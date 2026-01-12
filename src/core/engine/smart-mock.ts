@@ -2,13 +2,15 @@ import type { MockGenerator } from '../types'
 import { generateUsername } from 'unique-username-generator';
 import { faker } from '@faker-js/faker';
 
-
 const generators: Record<string, MockGenerator> = {
 
   guid: () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0,
-        v = c === 'x' ? r : (r & 0x3 | 0x8);
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   },
@@ -45,7 +47,7 @@ const generators: Record<string, MockGenerator> = {
   },
 
   ip: (args?: string) => {
-    if (args == "6" || args == "IPv6" || args == "ipv6" || args == "v6") {
+    if (['6', 'IPv6', 'ipv6', 'v6'].includes(args as string)) {
       return faker.internet.ipv6();
     } else {
       return faker.internet.ipv4();
@@ -157,7 +159,7 @@ const generators: Record<string, MockGenerator> = {
     };
   },
 
-  color: () => `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`,
+  color: () => `#${Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0')}`,
 
   url: (args?: string) => {
     const tlds = args ? args.split(',').map(s => s.trim()) : ['com', 'org', 'net', 'io', 'co', 'app', 'dev'];

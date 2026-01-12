@@ -1,3 +1,4 @@
+import { generateUniqueId } from '../utils/index'
 import type { MockRule, OpenAPIDocument, OpenAPISchema } from '../types';
 
 export function importOpenAPI(doc: OpenAPIDocument): MockRule[] {
@@ -13,7 +14,7 @@ export function importOpenAPI(doc: OpenAPIDocument): MockRule[] {
       if (pathItem[method]) {
         const operation = pathItem[method];
         const rule = {
-          id: generateId(),
+          id: generateUniqueId(),
           url: ruleUrl,
           method: method.toUpperCase(),
           status: 200,
@@ -28,10 +29,6 @@ export function importOpenAPI(doc: OpenAPIDocument): MockRule[] {
   }
 
   return rules;
-}
-
-function generateId(): string {
-  return Math.random().toString(36).substring(2, 9);
 }
 
 function generateResponseFromOperation(operation: any, schemas: Record<string, OpenAPISchema>): any {

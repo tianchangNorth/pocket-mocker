@@ -1,6 +1,7 @@
 import { writable, get } from 'svelte/store';
 import { updateRules as updateInterceptorRules } from '@/core';
 import { $fetch } from '@/core/utils/fetch';
+import { generateUniqueId } from '@/core/utils/index'
 import type { MockRule, MockGroup } from '../core/types';
 
 const STORAGE_KEY = 'pocket_mock_rules_v1';
@@ -69,7 +70,7 @@ export const initStore = async () => {
         return;
       }
     } catch (e: any) {
-      throw new Error("Failed to parse JSON: Unknown error", e.message)
+      throw new Error(`Failed to parse JSON: ${e.message}`)
     }
 
 
@@ -78,7 +79,8 @@ export const initStore = async () => {
   }
 };
 
-let saveTimer: any;
+let saveTimer: ReturnType<typeof setTimeout> | undefined;
+
 const triggerSave = () => {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
@@ -95,11 +97,12 @@ const triggerSave = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataToSave, null, 2)
-      })
+      }).catch(err => console.error('[PocketMock] Failed to save to server:', err));
     } else {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
-      } catch (e) {
+      } catch (e: any) {
+        throw new Error(`localStorage write faile:${e.message}`)
       }
     }
   }, 500);
@@ -138,7 +141,7 @@ export const updateRuleDelay = (id: string, delay: number) => {
 
 export const addRule = (url: string, method: string, initialResponse?: any, delay: number = 0, status: number = 200, groupId?: string) => {
   const newRule: MockRule = {
-    id: Date.now().toString() + Math.random().toString(36).substring(2, 9),
+    id: generateUniqueId(),
     url,
     method,
     response: initialResponse || { message: "Hello PocketMock" },

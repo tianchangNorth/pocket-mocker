@@ -32,12 +32,8 @@ function parseRoute(ruleUrl: string): ParsedRoute | null {
 
 export function matchRoute(ruleUrl: string, requestUrl: string): MatchResult {
   let cleanUrl = requestUrl;
-
-  try {
-    if (requestUrl.includes('?')) {
-      cleanUrl = requestUrl.split('?')[0];
-    }
-  } catch (e) {
+  if (requestUrl.includes('?')) {
+    cleanUrl = requestUrl.split('?')[0];
   }
 
   const pattern = parseRoute(ruleUrl);
