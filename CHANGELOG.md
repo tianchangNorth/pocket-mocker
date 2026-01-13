@@ -1,5 +1,46 @@
 # Changelog
 
+## v1.2.5 - 2026-01-13
+
+### New Features
+
+- **Import/Export Rules**:
+  - Added `getAllRules()` utility function to retrieve all rules as JSON
+  - Added `exportRules()` function to download rules as JSON file
+  - Added import functionality with overwrite option
+  - New "Export" and "Import" buttons in rule editor toolbar
+
+- **Network Log Context Menu**:
+  - Added right-click context menu for network log entries
+  - Copy response body to clipboard
+  - Copy as cURL command for easy reproduction
+  - Clear all network logs option
+
+### Improvements
+
+- **Error Handling**:
+  - Enhanced error response to include error details message
+  - Improved error handling in mock response resolution
+  - Better error messaging for mock function execution failures
+
+- **Mock Data Generation**:
+  - Optimized unique ID generation using `crypto.randomUUID()` when available
+  - Improved test cases for UUID generation validation
+  - Enhanced mock data generation logic consistency
+
+- **UI/UX**:
+  - Optimized context menu DOM management for better performance
+  - Ensured URL format correctness in cURL generation
+  - Fixed network log menu item display issues
+
+### Documentation
+
+- Updated README with import/export feature documentation
+- Updated user manual with new features and screenshots
+- Improved documentation clarity for network debugging features
+
+---
+
 ## v1.2.4 - 2025-12-23
 
 ### New Features
