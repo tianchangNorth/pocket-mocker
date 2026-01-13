@@ -226,7 +226,7 @@ describe('Request Handler - resolveMockResponse', () => {
     );
 
     expect(result.status).toBe(500);
-    expect(result.response).toEqual({ error: 'Mock function execution failed' });
+    expect(result.response).toEqual({ error: 'Mock function execution failed', details: 'Boom' });
   });
 
   it('should handle Response object in function (or error if Response polyfill fails)', async () => {
@@ -247,7 +247,7 @@ describe('Request Handler - resolveMockResponse', () => {
     // In a test environment without proper DOM APIs, creating a Response object might fail
     // The handler should catch this and return an error response
     if (result.status === 500) {
-      expect(result.response).toEqual({ error: 'Mock function execution failed' });
+      expect(result.response).toMatchObject({ error: 'Mock function execution failed' });
     } else {
       // In a real browser environment with proper Response support
       expect(result.response).toBeInstanceOf(globalThis.Response);

@@ -42,16 +42,11 @@ describe('generateMockData', () => {
     const result = generateMockData(template);
     expect(result.users).toBeInstanceOf(Array);
     expect(result.users).toHaveLength(3);
-    expect(result.users[0]).toEqual({
-      id: 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = 0.5 * 16 | 0,
-          v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      }),
-      age: 51 // Math.floor(0.5 * (100 - 1 + 1)) + 1 = Math.floor(50) + 1 = 51
-    });
-    expect(result.users[1]).toEqual(result.users[0]);
-    expect(result.users[2]).toEqual(result.users[0]);
+    // @guid now uses crypto.randomUUID() when available, so just validate format
+    expect(result.users[0].id).toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/);
+    expect(result.users[0].age).toBe(51); // Math.floor(0.5 * (100 - 1 + 1)) + 1 = Math.floor(50) + 1 = 51
+    expect(result.users[1].id).toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/);
+    expect(result.users[2].id).toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/);
   });
 
   it('should generate data using "@generatorName" pattern', () => {
