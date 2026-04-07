@@ -159,7 +159,40 @@ const generators: Record<string, MockGenerator> = {
     };
   },
 
+  ipv6: () => faker.internet.ipv6(),
+
   color: () => `#${Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0')}`,
+
+  timestamp: (args?: string) => {
+    const now = new Date();
+    let start = new Date(now.getFullYear() - 1, 0, 1);
+    let end = now;
+    if (args) {
+      const [s, e] = args.split(',').map(s => s.trim());
+      if (s) start = new Date(s);
+      if (e) end = new Date(e);
+    }
+    const ts = start.getTime() + Math.random() * (end.getTime() - start.getTime());
+    return new Date(ts).toISOString();
+  },
+
+  phoneNumber: (args?: string) => {
+    const code = args || '+1';
+    const area = Math.floor(Math.random() * 900) + 100;
+    const pre = Math.floor(Math.random() * 900) + 100;
+    const line = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    return `${code}-${area}-${pre}-${line}`;
+  },
+
+  password: (args?: string) => {
+    const len = args ? parseInt(args, 10) : 16;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    let result = '';
+    for (let i = 0; i < len; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  },
 
   url: (args?: string) => {
     const tlds = args ? args.split(',').map(s => s.trim()) : ['com', 'org', 'net', 'io', 'co', 'app', 'dev'];
