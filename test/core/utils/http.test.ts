@@ -28,6 +28,12 @@ describe('HTTP Utils', () => {
       const payload = [{ a: 1 }, { b: 2 }];
       expect(formatJSON(payload)).toBe(JSON.stringify(payload, null, 2));
     });
+
+    it('should preserve falsy primitive values', () => {
+      expect(formatJSON(0)).toBe('0');
+      expect(formatJSON(false)).toBe('false');
+      expect(formatJSON('')).toBe('');
+    });
   });
 
   describe('formatHeaders', () => {

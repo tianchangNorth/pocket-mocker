@@ -2,10 +2,18 @@ import { appReady } from '@/store/store';
 import { parseBodyData } from '../utils/http';
 import { findMatchingRule, resolveMockResponse, logMockRequest } from '../engine/handler';
 
+type PatchedFetch = typeof window.fetch & {
+  __pocketMockPatched?: true;
+  __pocketMockOriginalFetch?: typeof window.fetch;
+};
+
 export function patchFetch() {
+  const currentFetch = window.fetch as PatchedFetch;
+  if (currentFetch.__pocketMockPatched) return;
+
   const originalFetch = window.fetch;
 
-  window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  const pocketFetch: PatchedFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const url = typeof input === 'string' ? input : (input instanceof Request ? input.url : input.toString());
 
     if (url.includes('/__pocket_mock/')) {
@@ -68,4 +76,8 @@ export function patchFetch() {
 
     return promise;
   };
+
+  pocketFetch.__pocketMockPatched = true;
+  pocketFetch.__pocketMockOriginalFetch = originalFetch;
+  window.fetch = pocketFetch;
 }

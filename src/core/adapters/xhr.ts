@@ -2,7 +2,15 @@ import { appReady } from '@/store/store';
 import { parseBodyData } from '../utils/http';
 import { findMatchingRule, resolveMockResponse, logMockRequest } from '../engine/handler';
 
+type PatchedXMLHttpRequest = typeof window.XMLHttpRequest & {
+  __pocketMockPatched?: true;
+  __pocketMockOriginalXHR?: typeof window.XMLHttpRequest;
+};
+
 export function patchXHR() {
+  const CurrentXHR = window.XMLHttpRequest as PatchedXMLHttpRequest;
+  if (CurrentXHR.__pocketMockPatched) return;
+
   const OriginalXHR = window.XMLHttpRequest;
 
   class PocketXHR extends OriginalXHR {
@@ -137,5 +145,7 @@ export function patchXHR() {
     }
   }
 
+  (PocketXHR as PatchedXMLHttpRequest).__pocketMockPatched = true;
+  (PocketXHR as PatchedXMLHttpRequest).__pocketMockOriginalXHR = OriginalXHR;
   window.XMLHttpRequest = PocketXHR;
 }

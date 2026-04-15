@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.2.6 - 2026-04-15
+
+### Bug Fixes
+
+- Respect `pocketMock({ enable: false })` and skip initialization when disabled.
+- Prevent repeated `fetch` and `XMLHttpRequest` patching when `pocketMock()` is called multiple times.
+- Preserve falsy primitive values such as `0`, `false`, and empty strings in request/response log formatting.
+- Validate Vite plugin save payloads before writing `pocket-mock.json`, returning `400` for invalid JSON without overwriting existing config.
+
+### Tests
+
+- Added regression tests for interceptor patch idempotency.
+- Added regression tests for invalid Vite plugin config saves.
+- Added coverage for falsy primitive JSON formatting.
+
+---
+
 ## v1.2.5 - 2026-01-13
 
 ### New Features
