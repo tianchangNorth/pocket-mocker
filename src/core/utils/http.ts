@@ -1,5 +1,5 @@
 export function formatJSON(response: any): string | undefined {
-  if (!response) return undefined;
+  if (response === null || response === undefined) return undefined;
 
   if (typeof response === 'string') {
     try {

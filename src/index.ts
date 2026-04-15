@@ -20,6 +20,8 @@ export function defineConfig(config: MockRule[]): MockRule[] {
 }
 
 export function pocketMock(options: PocketMockOptions = {}) {
+  if (options.enable === false) return;
+
   initInterceptor();
   initStore();
   mountUI();

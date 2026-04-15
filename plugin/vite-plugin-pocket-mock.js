@@ -87,17 +87,19 @@ export default function pocketMockPlugin() {
           req.on('end', () => {
             try {
               const configPath = path.resolve(process.cwd(), CONFIG_FILE_NAME);
-              fs.writeFileSync(configPath, body);
+              const parsed = JSON.parse(body);
+              fs.writeFileSync(configPath, JSON.stringify(parsed, null, 2));
 
               res.statusCode = 200;
               res.setHeader('Content-Type', 'application/json');
               res.end(JSON.stringify({ success: true }));
               
             } catch (e) {
-              console.error('[PocketMock] Save failed', e);
-              res.statusCode = 500;
+              const isSyntaxError = e instanceof SyntaxError;
+              console.error(isSyntaxError ? '[PocketMock] Invalid config JSON' : '[PocketMock] Save failed', e);
+              res.statusCode = isSyntaxError ? 400 : 500;
               res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ error: 'Save failed' }));
+              res.end(JSON.stringify({ error: isSyntaxError ? 'Invalid JSON' : 'Save failed' }));
             }
           });
           return; 
