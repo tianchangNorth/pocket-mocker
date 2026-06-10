@@ -1,11 +1,14 @@
 import { writable, get } from 'svelte/store';
 import { updateRules as updateInterceptorRules } from '@/core';
+import { mockStateStore } from '@/core/state/mock-state';
 import { $fetch } from '@/core/utils/fetch';
 import { generateUniqueId } from '@/core/utils/index'
 import type { MockRule, MockGroup } from '../core/types';
 
 const STORAGE_KEY = 'pocket_mock_rules_v1';
+const STATE_STORAGE_KEY = 'pocket_mock_state_v1';
 let isServerMode = false;
+let stateSaveEnabled = false;
 
 let resolveReady!: (value: void | PromiseLike<void>) => void;
 
@@ -15,6 +18,8 @@ export const appReady = new Promise<void>((resolve) => {
 
 export const rules = writable<MockRule[]>([]);
 export const groups = writable<MockGroup[]>([]);
+export const mockState = writable<Record<string, any>>({});
+export const mockStatePersisted = writable(true);
 
 export const updateRules = (newRules: MockRule[]) => {
   rules.set(newRules);
@@ -42,11 +47,13 @@ export const initStore = async () => {
           rules.set(data);
           groups.set([]);
           isServerMode = true;
+          await loadMockStateFromServer();
           return;
         } else if (data.rules) {
           rules.set(data.rules);
           groups.set(data.groups || []);
           isServerMode = true;
+          await loadMockStateFromServer();
           return;
         } else {
           isServerMode = false;
@@ -67,17 +74,61 @@ export const initStore = async () => {
           rules.set(data.rules);
           groups.set(data.groups || []);
         }
+        loadMockStateFromLocal();
         return;
       }
     } catch (e: any) {
       throw new Error(`Failed to parse JSON: ${e.message}`)
     }
 
+    loadMockStateFromLocal();
 
   } finally {
+    stateSaveEnabled = true;
     if (resolveReady) resolveReady();
   }
 };
+
+async function loadMockStateFromServer() {
+  try {
+    const res = await fetch('/__pocket_mock/state', {
+      cache: 'no-store'
+    });
+    if (!res.ok) return;
+
+    const data = await res.json();
+    if (data && typeof data === 'object' && 'state' in data) {
+      mockStatePersisted.set(data.persist !== false);
+      mockStateStore.replace(data.state || {});
+      return;
+    }
+
+    mockStateStore.replace(data || {});
+  } catch (e) {
+    mockStateStore.replace({});
+  }
+}
+
+function loadMockStateFromLocal() {
+  try {
+    const json = localStorage.getItem(STATE_STORAGE_KEY);
+    if (!json) {
+      mockStateStore.replace({});
+      return;
+    }
+
+    const data = JSON.parse(json);
+    if (data && typeof data === 'object' && 'state' in data) {
+      mockStatePersisted.set(data.persist !== false);
+      mockStateStore.replace(data.state || {});
+      return;
+    }
+
+    mockStateStore.replace(data || {});
+  } catch (e: any) {
+    throw new Error(`Failed to parse mock state JSON: ${e.message}`);
+  }
+}
 
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -116,6 +167,58 @@ rules.subscribe((value) => {
 groups.subscribe(() => {
   triggerSave();
 });
+
+let stateSaveTimer: ReturnType<typeof setTimeout> | undefined;
+
+const triggerStateSave = () => {
+  if (!stateSaveEnabled) return;
+
+  clearTimeout(stateSaveTimer);
+  stateSaveTimer = setTimeout(() => {
+    const currentState = mockStateStore.all();
+    const persist = get(mockStatePersisted);
+
+    if (isServerMode) {
+      fetch('/__pocket_mock/state/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ persist, state: persist ? currentState : {} }, null, 2)
+      }).catch(err => console.error('[PocketMock] Failed to save mock state to server:', err));
+      return;
+    }
+
+    try {
+      if (persist) {
+        localStorage.setItem(STATE_STORAGE_KEY, JSON.stringify({ persist, state: currentState }));
+      } else {
+        localStorage.removeItem(STATE_STORAGE_KEY);
+      }
+    } catch (e: any) {
+      throw new Error(`localStorage mock state write failed:${e.message}`)
+    }
+  }, 300);
+};
+
+mockStateStore.subscribe((value) => {
+  mockState.set(value);
+  triggerStateSave();
+});
+
+mockStatePersisted.subscribe(() => {
+  triggerStateSave();
+});
+
+export const replaceMockState = (value: Record<string, any>) => {
+  mockStateStore.replace(value);
+};
+
+export const clearMockState = () => {
+  mockStateStore.clear();
+};
+
+export const setMockStatePersisted = (persist: boolean) => {
+  mockStatePersisted.set(persist);
+};
 
 export const toggleRule = (id: string) => {
   rules.update(items => items.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r));

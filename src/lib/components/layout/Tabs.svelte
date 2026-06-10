@@ -5,6 +5,7 @@
 <div class="main-tabs">
   <button class="main-tab-btn" class:active={$uiState.activeMainTab === 'rules'} on:click={() => uiState.setMainTab('rules')}>Rules</button>
   <button class="main-tab-btn" class:active={$uiState.activeMainTab === 'network'} on:click={() => uiState.setMainTab('network')}>Network</button>
+  <button class="main-tab-btn" class:active={$uiState.activeMainTab === 'state'} on:click={() => uiState.setMainTab('state')}>State</button>
 </div>
 
 <style>

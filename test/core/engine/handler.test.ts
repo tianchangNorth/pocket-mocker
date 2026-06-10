@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { resolveMockResponse } from '../../../src/core/engine/handler';
+import { mockStateStore } from '../../../src/core/state/mock-state';
 import type { MockRule } from '../../../src/core/types';
 
 // Mock generateMockData to avoid dependency on its random behavior
@@ -23,6 +24,10 @@ describe('Request Handler - resolveMockResponse', () => {
     status: 200,
     headers: {}
   };
+
+  beforeEach(() => {
+    mockStateStore.clear();
+  });
 
   beforeAll(() => {
     // Mock global window object
@@ -190,6 +195,44 @@ describe('Request Handler - resolveMockResponse', () => {
 
     expect(result.status).toBe(202);
     expect(result.response).toEqual({ async: true });
+  });
+
+  it('should share mock state between function responses', async () => {
+    const createUserRule: MockRule = {
+      ...baseRule,
+      method: 'POST',
+      response: (req: any, ctx: any) => {
+        const user = { id: 1, ...req.body };
+        ctx.state.update('users', (users = []) => [user, ...users]);
+        return { status: 200, body: { code: 0, data: user } };
+      }
+    };
+    const listUsersRule: MockRule = {
+      ...baseRule,
+      response: (_req: any, ctx: any) => {
+        return { status: 200, body: { code: 0, data: ctx.state.get('users') || [] } };
+      }
+    };
+
+    await resolveMockResponse(
+      createUserRule,
+      {},
+      '/users',
+      'POST',
+      new Headers(),
+      { name: 'Tom' }
+    );
+
+    const result = await resolveMockResponse(
+      listUsersRule,
+      {},
+      '/users',
+      'GET',
+      new Headers(),
+      null
+    );
+
+    expect(result.response).toEqual({ code: 0, data: [{ id: 1, name: 'Tom' }] });
   });
 
   it('should handle stringified function (eval)', async () => {

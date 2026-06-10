@@ -8,7 +8,22 @@ export interface MockRequest {
   query: Record<string, string>;
 }
 
-export type DynamicResponseFunction = (req: MockRequest) => any | Promise<any>;
+export interface MockContext {
+  state: MockStateStore;
+}
+
+export interface MockStateStore {
+  get<T = any>(key: string): T | undefined;
+  set<T = any>(key: string, value: T): void;
+  update<T = any>(key: string, updater: (value: T | undefined) => T): void;
+  delete(key: string): void;
+  clear(): void;
+  all(): Record<string, any>;
+  replace(value: Record<string, any>): void;
+  subscribe(listener: (value: Record<string, any>) => void): () => void;
+}
+
+export type DynamicResponseFunction = (req: MockRequest, ctx: MockContext) => any | Promise<any>;
 
 export interface MockRule {
   id: string;
