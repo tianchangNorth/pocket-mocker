@@ -260,6 +260,47 @@ You are not limited to static JSON. You can write JavaScript functions to genera
 }
 ```
 
+### Stateful API Workflows
+
+Dynamic mock functions also receive a shared `ctx` object. Use `ctx.state` to connect multiple APIs together and simulate real CRUD workflows without a backend.
+
+**Create a user:**
+
+```javascript
+(req, ctx) => {
+  const user = {
+    id: Date.now(),
+    ...req.body
+  };
+
+  ctx.state.update('users', (users = []) => [user, ...users]);
+
+  return {
+    code: 0,
+    message: 'created',
+    data: user
+  };
+}
+```
+
+**List users:**
+
+```javascript
+(req, ctx) => {
+  const users = ctx.state.get('users') || [];
+
+  return {
+    code: 0,
+    data: users,
+    total: users.length
+  };
+}
+```
+
+With these two rules, a `POST /api/users` request updates shared Mock State, and a later `GET /api/users` request returns the updated list.
+
+The dashboard includes a **State** tab where you can inspect, edit, import, copy, clear, and persist the shared state as JSON.
+
 ### Import & Export
 
 Seamlessly integrate with your existing API workflow.
@@ -279,11 +320,21 @@ The built-in Network panel logs all network requests (both mocked and real) in r
   - **Add to Mock Rules**: Instantly convert a real request into a mock rule.
 - **Filter**: Filter logs by URL, Method, or Mock status.
 
+### Mock State Panel
+
+The **State** panel gives you direct control over shared Mock State:
+
+- **View/Edit JSON**: Inspect or manually seed state such as `{ "users": [] }`.
+- **Persist Toggle**: Keep state across refreshes, or reset it for each session.
+- **Import/Copy/Clear**: Quickly move test state between environments or reset a scenario.
+- **Server Mode Sync**: When using the Vite plugin, state is saved to `pocket-mock-state.json`.
+
 ---
 
 ## Technical Architecture
 
 - **Monkey Patching**: Intercepts requests by overriding `window.fetch` and extending `XMLHttpRequest` prototype chain.
+- **Mock State**: Provides a shared JSON-compatible state container for dynamic mock functions.
 - **Shadow DOM**: Encapsulates debugging UI in Shadow Root for complete style sandboxing.
 - **Vite Library Mode**: Uses Vite's library mode with `css: 'injected'` strategy to inline all CSS into JS for **single-file import** experience.
 

@@ -1,5 +1,50 @@
 # Changelog
 
+## v1.3.0 - 2026-06-10
+
+### New Features
+
+- **Mock State 联动能力**:
+  - Added shared Mock State support for dynamic response functions through `ctx.state`.
+  - Dynamic mock functions can now read and write shared state across different API rules.
+  - Supports realistic CRUD flows such as creating a user with `POST /api/users` and reading it later with `GET /api/users`.
+  - Exported `MockContext` and `MockStateStore` types for TypeScript users.
+
+- **State Panel**:
+  - Added a new `State` tab to the PocketMocker dashboard.
+  - Users can view, edit, save, clear, copy, and import shared Mock State as JSON.
+  - Added a persistence toggle for controlling whether Mock State survives refreshes.
+
+- **Mock State Persistence**:
+  - Local mode stores Mock State in `localStorage`.
+  - Vite plugin mode stores Mock State in `pocket-mock-state.json`.
+  - Added Vite plugin endpoints for reading, saving, and resetting Mock State.
+
+- **Demo Experience**:
+  - Added a linked API state demo to `src/main.ts`.
+  - Demo users can create records through `POST /api/users` and refresh `GET /api/users` to verify stateful API behavior.
+
+### Bug Fixes
+
+- Fixed absolute path matching so parent paths no longer implicitly match child paths.
+  - For example, `/appply` no longer matches `/appply/invite`.
+  - Use explicit wildcard rules such as `/appply/*` when child path matching is intended.
+
+- Added CodeMirror dependency dedupe configuration in Vite to avoid duplicate `@codemirror/state` instances causing editor initialization failures.
+
+### Tests
+
+- Added unit tests for Mock State store operations.
+- Added handler tests covering shared state between dynamic response functions.
+- Added Vite plugin tests for Mock State file read, save, validation, and reset behavior.
+- Added matcher regression tests for absolute path matching boundaries.
+
+### Documentation
+
+- Added `docs/MOCK_STATE_DESIGN.zh-CN.md` with the Mock State design, API shape, UI plan, persistence behavior, and rollout strategy.
+
+---
+
 ## v1.2.6 - 2026-04-15
 
 ### Bug Fixes
