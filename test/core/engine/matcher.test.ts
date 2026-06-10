@@ -7,6 +7,16 @@ describe('Route Matcher', () => {
     expect(res.match).toBe(true);
   });
 
+  it('Absolute path rule should not match a different path with the same suffix', () => {
+    const res = matchRoute('/invite', 'http://localhost/appply/invite');
+    expect(res.match).toBe(false);
+  });
+
+  it('Absolute path rule should not match child paths implicitly', () => {
+    const res = matchRoute('/appply', 'http://localhost/appply/invite');
+    expect(res.match).toBe(false);
+  });
+
   it('Legacy includes match should pass', () => {
     const res = matchRoute('users', 'http://localhost/api/users/list');
     expect(res.match).toBe(true);

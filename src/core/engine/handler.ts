@@ -2,6 +2,7 @@ import { matchRoute } from './matcher';
 import { generateMockData } from './smart-mock';
 import { createMockRequest } from './mock-request';
 import { getActiveRules } from '../manager/rule-manager';
+import { createMockContext } from '../state/mock-state';
 import { requestLogs } from '@/store/log-store';
 import { formatJSON } from '../utils/http';
 
@@ -52,8 +53,9 @@ export async function resolveMockResponse(
 
   if (typeof resolvedResponse === 'function') {
     const mockRequest = await createMockRequest(url, method, requestHeaders, bodyData, matchParams);
+    const mockContext = createMockContext();
     try {
-      resolvedResponse = await Promise.resolve(resolvedResponse(mockRequest));
+      resolvedResponse = await Promise.resolve(resolvedResponse(mockRequest, mockContext));
     } catch (e: any) {
       resolvedResponse = { status: 500, body: { error: 'Mock function execution failed', details: e.message } };
     }

@@ -14,9 +14,10 @@ Welcome to PocketMocker! This is an in-page HTTP controller designed specificall
    - [Rule Grouping](#rule-grouping)
    - [Smart Mock Syntax](#smart-mock-syntax)
    - [Dynamic Function Mock](#dynamic-function-mock)
-4. [Network Debugging](#network-debugging)
-5. [Importing Configurations](#importing-configurations)
-6. [FAQ](#faq)
+4. [State Management](#state-management)
+5. [Network Debugging](#network-debugging)
+6. [Importing Configurations](#importing-configurations)
+7. [FAQ](#faq)
 
 ---
 
@@ -88,7 +89,8 @@ The panel is divided into three main areas:
 2.  **Tabs**:
     - **Rules**: Manage all Mock rules.
     - **Network**: Monitor network request logs in real-time.
-3.  **Content Area**: Displays the rule list or network logs.
+    - **State**: Inspect and edit shared Mock State used by dynamic rules.
+3.  **Content Area**: Displays the rule list, network logs, or shared state editor.
 
 > **Tip**: You can drag the edges of the panel to resize it.
 
@@ -191,6 +193,11 @@ Generate an array by adding `|count` to the key name.
 ### Dynamic Function Mock
 PocketMocker's editor features smart detection. When you write a JavaScript function in the **Body** editor (instead of standard JSON format), the editor automatically recognizes and switches to **Function** mode for full dynamic response logic.
 
+Function mocks receive two arguments:
+
+- `req`: Current request information, including `url`, `method`, `params`, `query`, `body`, and `headers`.
+- `ctx`: Runtime context. `ctx.state` is a shared state store that can be used by different mock rules.
+
 ```javascript
 (req) => {
   // req contains: url, method, params, query, body, headers
@@ -215,6 +222,92 @@ PocketMocker's editor features smart detection. When you write a JavaScript func
   };
 }
 ```
+
+#### Shared Mock State
+
+Use `ctx.state` when one API needs to affect another API.
+
+**POST `/api/users` - create a user:**
+
+```javascript
+(req, ctx) => {
+  const user = {
+    id: Date.now(),
+    ...req.body
+  };
+
+  ctx.state.update('users', (users = []) => [user, ...users]);
+
+  return {
+    code: 0,
+    message: 'created',
+    data: user
+  };
+}
+```
+
+**GET `/api/users` - list users:**
+
+```javascript
+(req, ctx) => {
+  const users = ctx.state.get('users') || [];
+
+  return {
+    code: 0,
+    data: users,
+    total: users.length
+  };
+}
+```
+
+After these two rules are configured, creating a user updates shared Mock State, and listing users returns the latest data.
+
+Available state APIs:
+
+| API | Description |
+| :--- | :--- |
+| `ctx.state.get(key)` | Read a state value |
+| `ctx.state.set(key, value)` | Replace a state value |
+| `ctx.state.update(key, updater)` | Update a value from the previous value |
+| `ctx.state.delete(key)` | Remove one state key |
+| `ctx.state.clear()` | Clear all state |
+| `ctx.state.all()` | Return the full state object |
+
+---
+
+## State Management
+
+Switch to the **State** tab to inspect and manage the shared Mock State used by dynamic function rules.
+
+### What State Is For
+
+State is useful when you need linked API behavior:
+
+- Create an item with `POST`, then list it with `GET`.
+- Update an item with `PUT` or `PATCH`, then read the updated detail.
+- Delete an item with `DELETE`, then verify it disappears from the list.
+- Prepare initial test data before using the page.
+
+### State Panel Actions
+
+- **Edit JSON**: Modify the full shared state directly.
+- **Save**: Apply the edited JSON to the runtime state.
+- **Clear**: Remove all keys from Mock State.
+- **Copy**: Copy the current state JSON to the clipboard.
+- **Import**: Import a JSON file as the current state.
+- **Persist**: Control whether state is saved across page refreshes.
+
+### Persistence
+
+In Local Mode, PocketMocker stores state in `localStorage` under `pocket_mock_state_v1`.
+
+In Server Mode with the Vite plugin, state is saved to:
+
+```txt
+pocket-mock-state.json
+```
+
+The state file is JSON-compatible and can be edited manually if needed.
 
 ---
 
@@ -270,6 +363,12 @@ A: Please check the following:
 
 **Q: Why is `req.body` empty in my Function Mock?**
 A: Ensure you set the correct `Content-Type` (e.g., `application/json`) when sending the request; otherwise, the parser may fail to parse the body.
+
+**Q: How do I make `POST /api/users` affect `GET /api/users`?**
+A: Use `ctx.state` in Function Mock. Write data in the `POST` rule with `ctx.state.update('users', ...)`, then read it in the `GET` rule with `ctx.state.get('users')`.
+
+**Q: Why did my Mock State disappear after refreshing?**
+A: Open the **State** tab and enable **Persist**. In Server Mode, also make sure `pocket-mock-state.json` can be written by the Vite dev server.
 
 **Q: How do I disable PocketMocker in production?**
 A: Wrap the initialization with an environment variable check:

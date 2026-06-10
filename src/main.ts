@@ -67,6 +67,61 @@ const errorRule = {
 };
 addRule(errorRule.url, errorRule.method, errorRule.response);
 
+const createUserRule = {
+  "id": "state-create-user-demo",
+  "url": "/api/users",
+  "method": "POST",
+  "response": (req: any, ctx: any) => {
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    const user = {
+      id: Date.now(),
+      name: body?.name || 'Anonymous',
+      age: Number(body?.age || 18),
+      createdAt: new Date().toISOString()
+    };
+
+    ctx.state.update('users', (users = []) => [user, ...users]);
+
+    return {
+      status: 200,
+      body: {
+        code: 0,
+        message: 'created',
+        data: user
+      }
+    };
+  },
+  "enabled": true,
+  "delay": 200,
+  "status": 200,
+  "headers": {}
+};
+addRule(createUserRule.url, createUserRule.method, createUserRule.response, createUserRule.delay);
+
+const listUsersRule = {
+  "id": "state-list-users-demo",
+  "url": "/api/users",
+  "method": "GET",
+  "response": (_req: any, ctx: any) => {
+    const users = ctx.state.get('users') || [];
+
+    return {
+      status: 200,
+      body: {
+        code: 0,
+        message: 'success',
+        data: users,
+        total: users.length
+      }
+    };
+  },
+  "enabled": true,
+  "delay": 200,
+  "status": 200,
+  "headers": {}
+};
+addRule(listUsersRule.url, listUsersRule.method, listUsersRule.response, listUsersRule.delay);
+
 new Dashboard({ target: document.body });
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -130,6 +185,25 @@ app.innerHTML = `
           </button>
         </div>
       </div>
+
+      <!-- CARD 5: Shared State -->
+      <div class="card state-card" style="padding: 24px;">
+        <div class="card-badge post">STATE</div>
+        <h3>Linked API State</h3>
+        <p>Create a user through <code>POST /api/users</code>, then refresh <code>GET /api/users</code> to read the shared Mock State.</p>
+        <div class="url-pill">POST + GET /api/users</div>
+        <div class="input-row stacked">
+          <input type="text" id="user-name" value="Tom" placeholder="Name">
+          <input type="number" id="user-age" value="18" min="1" placeholder="Age">
+        </div>
+        <div class="split-actions">
+          <button id="btn-create-user" class="btn accent">Create User</button>
+          <button id="btn-refresh-users" class="btn primary">Refresh List</button>
+        </div>
+        <div id="users-list" class="users-list">
+          <div class="empty-users">No users yet</div>
+        </div>
+      </div>
     </div>
 
     <!-- Live Monitor -->
@@ -166,6 +240,7 @@ app.innerHTML = `
         <li><code>profileRule</code>: Demonstrates smart data generation with <code>@guid</code>, <code>@name</code>, etc.</li>
         <li><code>loginRule</code>: Shows how to use a function to create dynamic responses based on request body (e.g., username 'admin').</li>
         <li><code>errorRule</code>: Simulates a 500 server error with a custom error message.</li>
+        <li><code>createUserRule</code> and <code>listUsersRule</code>: Demonstrate shared Mock State across different APIs.</li>
       </ul>
 
       <h3>3. Interacting with the Dashboard:</h3>
@@ -173,6 +248,7 @@ app.innerHTML = `
         <li>The PocketMock dashboard (opened by default) provides a UI to manage all your mock rules.</li>
         <li>You can enable/disable rules, edit their responses, and observe network traffic.</li>
         <li>Try clicking the "Fetch Profile", "Login", and "Trigger 500" buttons in the demo UI to see the mock rules in action and observe the responses in the "Live Network Traffic" monitor below.</li>
+        <li>Use "Create User" and "Refresh List" to verify that one API can update data used by another API.</li>
       </ul>
 
       <h3>4. Key Features:</h3>
@@ -412,9 +488,65 @@ style.textContent = `
   .btn.accent { background: var(--accent); color: white; }
   .btn.danger { background: var(--danger); color: white; }
 
+  .state-card {
+    grid-column: span 2;
+  }
+
   .input-row {
     display: flex;
     gap: 8px;
+  }
+
+  .input-row.stacked {
+    margin-bottom: 10px;
+  }
+
+  .split-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .users-list {
+    min-height: 104px;
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #0f172a;
+    padding: 8px;
+  }
+
+  .empty-users {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .user-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.85rem;
+  }
+
+  .user-item:last-child {
+    border-bottom: none;
+  }
+
+  .user-name {
+    color: var(--text-main);
+    font-weight: 600;
+  }
+
+  .user-meta {
+    color: var(--text-muted);
+    white-space: nowrap;
   }
   
   input {
@@ -427,6 +559,18 @@ style.textContent = `
     outline: none;
   }
   input:focus { border-color: var(--accent); }
+
+  @media (max-width: 720px) {
+    .state-card {
+      grid-column: span 1;
+    }
+
+    .input-row.stacked,
+    .split-actions {
+      grid-template-columns: 1fr;
+      flex-direction: column;
+    }
+  }
 
   /* Monitor Section */
   .monitor-section {
@@ -519,6 +663,19 @@ document.head.appendChild(style);
 const consoleOutput = document.getElementById('console-output')!;
 const clearBtn = document.getElementById('btn-clear')!;
 
+function escapeHTML(value: string) {
+  return value.replace(/[&<>"']/g, (char) => {
+    const entities: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    };
+    return entities[char];
+  });
+}
+
 function log(method: string, url: string, status: number, data: any, time: number) {
   const isError = status >= 400;
   const color = isError ? 'var(--danger)' : 'var(--success)';
@@ -557,16 +714,46 @@ async function request(method: string, url: string, body?: any) {
     else res = await axios.post(url, body);
 
     log(method, url, res.status, res.data, Date.now() - start);
+    return res.data;
   } catch (err: any) {
     const status = err.response?.status || 500;
     const data = err.response?.data || { error: err.message };
     log(method, url, status, data, Date.now() - start);
+    return data;
   }
+}
+
+function renderUsers(users: Array<{ id: number; name: string; age: number }>) {
+  const usersList = document.getElementById('users-list')!;
+  if (!users.length) {
+    usersList.innerHTML = '<div class="empty-users">No users yet</div>';
+    return;
+  }
+
+  usersList.innerHTML = users.map(user => `
+    <div class="user-item">
+      <span class="user-name">${escapeHTML(user.name)}</span>
+      <span class="user-meta">Age ${user.age} · #${user.id}</span>
+    </div>
+  `).join('');
+}
+
+async function refreshUsers() {
+  const data = await request('GET', '/api/users');
+  renderUsers(Array.isArray(data?.data) ? data.data : []);
 }
 
 document.getElementById('btn-smart')!.addEventListener('click', () => request('GET', '/api/user/profile'));
 document.getElementById('btn-list')!.addEventListener('click', () => request('GET', '/api/products/featured'));
 document.getElementById('btn-error')!.addEventListener('click', () => request('GET', '/api/system/status'));
+document.getElementById('btn-refresh-users')!.addEventListener('click', refreshUsers);
+document.getElementById('btn-create-user')!.addEventListener('click', async () => {
+  const name = (document.getElementById('user-name') as HTMLInputElement).value;
+  const age = Number((document.getElementById('user-age') as HTMLInputElement).value || 18);
+
+  await request('POST', '/api/users', { name, age });
+  await refreshUsers();
+});
 
 document.getElementById('btn-login')!.addEventListener('click', () => {
   const username = (document.getElementById('username') as HTMLInputElement).value;

@@ -13,7 +13,7 @@ export interface PocketMockOptions {
   enable?: boolean;
 }
 
-export type { MockRule, MockRequest, DynamicResponseFunction } from './core/types';
+export type { MockRule, MockRequest, DynamicResponseFunction, MockContext, MockStateStore } from './core/types';
 
 export function defineConfig(config: MockRule[]): MockRule[] {
   return config;

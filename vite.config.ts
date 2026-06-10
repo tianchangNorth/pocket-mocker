@@ -5,6 +5,17 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import pocketMockPlugin from './plugin/vite-plugin-pocket-mock.js'
 import dts from 'vite-plugin-dts'
+
+const CODEMIRROR_DEDUPE = [
+  '@codemirror/state',
+  '@codemirror/view',
+  '@codemirror/language',
+  '@codemirror/commands',
+  '@codemirror/search',
+  '@codemirror/autocomplete',
+  '@codemirror/lint'
+]
+
 export default defineConfig({
   plugins: [
     svelte({
@@ -21,6 +32,7 @@ export default defineConfig({
     })
   ],
   resolve: {
+    dedupe: CODEMIRROR_DEDUPE,
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },

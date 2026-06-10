@@ -2,6 +2,18 @@ import type { MatchResult, ParsedRoute } from '../types'
 
 const patternCache = new Map<string, ParsedRoute | null>();
 
+function stripQueryAndHash(url: string): string {
+  return url.split(/[?#]/)[0];
+}
+
+function getPathname(url: string): string {
+  try {
+    return new URL(url, 'http://pocket-mock.local').pathname;
+  } catch {
+    return stripQueryAndHash(url);
+  }
+}
+
 function parseRoute(ruleUrl: string): ParsedRoute | null {
   if (patternCache.has(ruleUrl)) {
     return patternCache.get(ruleUrl)!;
@@ -22,7 +34,7 @@ function parseRoute(ruleUrl: string): ParsedRoute | null {
     })
     .replace(/\*/g, '(.*)');
 
-  const regex = new RegExp(regexStr + '$');
+  const regex = new RegExp((ruleUrl.startsWith('/') ? '^' : '') + regexStr + '$');
 
   const result = { regex, keys };
   patternCache.set(ruleUrl, result);
@@ -31,15 +43,14 @@ function parseRoute(ruleUrl: string): ParsedRoute | null {
 }
 
 export function matchRoute(ruleUrl: string, requestUrl: string): MatchResult {
-  let cleanUrl = requestUrl;
-  if (requestUrl.includes('?')) {
-    cleanUrl = requestUrl.split('?')[0];
-  }
+  const cleanUrl = stripQueryAndHash(requestUrl);
+  const cleanRuleUrl = stripQueryAndHash(ruleUrl);
 
   const pattern = parseRoute(ruleUrl);
 
   if (pattern) {
-    const match = cleanUrl.match(pattern.regex);
+    const targetUrl = ruleUrl.startsWith('/') ? getPathname(cleanUrl) : cleanUrl;
+    const match = targetUrl.match(pattern.regex);
     if (match) {
       const params: Record<string, string> = {};
       pattern.keys.forEach((key, index) => {
@@ -51,8 +62,12 @@ export function matchRoute(ruleUrl: string, requestUrl: string): MatchResult {
     return { match: false, params: {} };
   }
 
-  const isExactMatch = requestUrl === ruleUrl || requestUrl.endsWith(ruleUrl);
-  const isIncludeMatch = requestUrl.includes(ruleUrl);
+  if (ruleUrl.startsWith('/')) {
+    return { match: getPathname(cleanUrl) === cleanRuleUrl, params: {} };
+  }
+
+  const isExactMatch = cleanUrl === cleanRuleUrl || cleanUrl.endsWith(cleanRuleUrl);
+  const isIncludeMatch = cleanUrl.includes(cleanRuleUrl);
 
   return { match: isExactMatch || isIncludeMatch, params: {} };
 }

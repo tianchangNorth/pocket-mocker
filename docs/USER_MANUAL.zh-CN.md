@@ -14,9 +14,10 @@
    - [规则分组](#规则分组)
    - [智能 Mock 语法](#智能-mock-语法)
    - [动态函数 Mock](#动态函数-mock)
-4. [网络调试](#网络调试)
-5. [导入配置](#导入配置)
-6. [常见问题](#常见问题)
+4. [状态管理](#状态管理)
+5. [网络调试](#网络调试)
+6. [导入配置](#导入配置)
+7. [常见问题](#常见问题)
 
 ---
 
@@ -88,7 +89,8 @@ export default defineConfig({
 2.  **标签页 (Tabs)**:
     - **Rules (规则)**: 管理所有 Mock 规则。
     - **Network (网络)**: 实时监控网络请求日志。
-3.  **内容区**: 显示规则列表或网络日志。
+    - **State (状态)**: 查看和编辑动态规则共享的 Mock State。
+3.  **内容区**: 显示规则列表、网络日志或共享状态编辑器。
 
 > **提示**: 您可以拖拽面板边缘调整其大小。
 
@@ -191,6 +193,11 @@ export default defineConfig({
 ### 动态函数 Mock
 PocketMocker 的编辑器具有智能识别功能。当您在 **Body** 编辑器中编写 JavaScript 函数（而不是标准的 JSON 格式）时，编辑器将自动识别并切换为 **Function** 模式，实现完全的动态响应逻辑。
 
+函数 Mock 会接收两个参数：
+
+- `req`: 当前请求信息，包括 `url`、`method`、`params`、`query`、`body` 和 `headers`。
+- `ctx`: 运行时上下文。`ctx.state` 是所有 Mock 规则共享的状态容器。
+
 ```javascript
 (req) => {
   // req 包含: url, method, params, query, body, headers
@@ -215,6 +222,92 @@ PocketMocker 的编辑器具有智能识别功能。当您在 **Body** 编辑器
   };
 }
 ```
+
+#### 共享 Mock State
+
+当一个接口需要影响另一个接口时，可以使用 `ctx.state`。
+
+**POST `/api/users` - 新增用户：**
+
+```javascript
+(req, ctx) => {
+  const user = {
+    id: Date.now(),
+    ...req.body
+  };
+
+  ctx.state.update('users', (users = []) => [user, ...users]);
+
+  return {
+    code: 0,
+    message: 'created',
+    data: user
+  };
+}
+```
+
+**GET `/api/users` - 获取用户列表：**
+
+```javascript
+(req, ctx) => {
+  const users = ctx.state.get('users') || [];
+
+  return {
+    code: 0,
+    data: users,
+    total: users.length
+  };
+}
+```
+
+配置这两条规则后，新增用户会写入共享 Mock State，获取用户列表时会返回最新数据。
+
+可用的状态 API：
+
+| API | 说明 |
+| :--- | :--- |
+| `ctx.state.get(key)` | 读取状态值 |
+| `ctx.state.set(key, value)` | 替换状态值 |
+| `ctx.state.update(key, updater)` | 基于旧值更新状态 |
+| `ctx.state.delete(key)` | 删除一个状态 key |
+| `ctx.state.clear()` | 清空所有状态 |
+| `ctx.state.all()` | 返回完整状态对象 |
+
+---
+
+## 状态管理
+
+切换到 **State** 标签页，可以查看和管理动态函数规则使用的共享 Mock State。
+
+### State 适用场景
+
+State 适合模拟接口联动：
+
+- 通过 `POST` 创建数据，再通过 `GET` 查询列表。
+- 通过 `PUT` 或 `PATCH` 更新数据，再读取更新后的详情。
+- 通过 `DELETE` 删除数据，再确认列表中已消失。
+- 在页面操作前手动准备初始测试数据。
+
+### State 面板操作
+
+- **编辑 JSON**: 直接修改完整共享状态。
+- **Save**: 将编辑后的 JSON 应用到运行时状态。
+- **Clear**: 清空全部 Mock State。
+- **Copy**: 复制当前状态 JSON。
+- **Import**: 导入 JSON 文件作为当前状态。
+- **Persist**: 控制状态是否在刷新页面后保留。
+
+### 持久化
+
+本地模式下，PocketMocker 会将状态保存到 `localStorage` 的 `pocket_mock_state_v1`。
+
+使用 Vite 插件的服务器模式下，状态会保存到项目根目录：
+
+```txt
+pocket-mock-state.json
+```
+
+该文件是 JSON 兼容格式，必要时可以手动编辑。
 
 ---
 
@@ -270,6 +363,12 @@ A: 请检查以下几点：
 
 **Q: Function Mock 中的 `req.body` 是空的？**
 A: 请确保发送请求时设置了正确的 `Content-Type` (如 `application/json`)，否则解析器可能无法正确解析 Body。
+
+**Q: 如何让 `POST /api/users` 影响 `GET /api/users`？**
+A: 在 Function Mock 中使用 `ctx.state`。在 `POST` 规则里通过 `ctx.state.update('users', ...)` 写入数据，在 `GET` 规则里通过 `ctx.state.get('users')` 读取数据。
+
+**Q: 为什么刷新页面后 Mock State 消失了？**
+A: 打开 **State** 标签页并启用 **Persist**。如果使用服务器模式，还需要确保 Vite dev server 可以写入 `pocket-mock-state.json`。
 
 **Q: 如何在生产环境中禁用 PocketMocker？**
 A: 请在初始化时包裹环境变量判断：

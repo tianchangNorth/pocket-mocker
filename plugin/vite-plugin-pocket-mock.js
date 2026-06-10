@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const CONFIG_FILE_NAME = 'pocket-mock.json';
+const STATE_FILE_NAME = 'pocket-mock-state.json';
 
 function createDefaultRules() {
   return [
@@ -38,6 +39,77 @@ export default function pocketMockPlugin() {
 
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
+        if (req.url?.startsWith('/__pocket_mock/state') && req.method === 'GET') {
+          const statePath = path.resolve(process.cwd(), STATE_FILE_NAME);
+
+          try {
+            res.setHeader('Content-Type', 'application/json');
+
+            if (!fs.existsSync(statePath)) {
+              res.end(JSON.stringify({ persist: true, state: {} }));
+              return;
+            }
+
+            const data = fs.readFileSync(statePath, 'utf-8');
+            if (!data.trim()) {
+              res.end(JSON.stringify({ persist: true, state: {} }));
+              return;
+            }
+
+            res.end(data);
+            return;
+          } catch (e) {
+            console.error('[PocketMock] Failed to read mock state', e);
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ error: 'Failed to read mock state' }));
+            return;
+          }
+        }
+
+        if (req.url?.startsWith('/__pocket_mock/state/reset') && req.method === 'POST') {
+          try {
+            const statePath = path.resolve(process.cwd(), STATE_FILE_NAME);
+            fs.writeFileSync(statePath, JSON.stringify({ persist: true, state: {} }, null, 2));
+
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ success: true }));
+          } catch (e) {
+            console.error('[PocketMock] Failed to reset mock state', e);
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ error: 'Failed to reset mock state' }));
+          }
+          return;
+        }
+
+        if (req.url?.startsWith('/__pocket_mock/state/save') && req.method === 'POST') {
+          let body = '';
+          req.on('data', chunk => {
+            body += chunk.toString();
+          });
+
+          req.on('end', () => {
+            try {
+              const statePath = path.resolve(process.cwd(), STATE_FILE_NAME);
+              const parsed = JSON.parse(body);
+              fs.writeFileSync(statePath, JSON.stringify(parsed, null, 2));
+
+              res.statusCode = 200;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ success: true }));
+            } catch (e) {
+              const isSyntaxError = e instanceof SyntaxError;
+              console.error(isSyntaxError ? '[PocketMock] Invalid mock state JSON' : '[PocketMock] Mock state save failed', e);
+              res.statusCode = isSyntaxError ? 400 : 500;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: isSyntaxError ? 'Invalid JSON' : 'Mock state save failed' }));
+            }
+          });
+          return;
+        }
+
         
         if (req.url?.startsWith('/__pocket_mock/rules') && req.method === 'GET') {
           

@@ -268,6 +268,47 @@ PocketMock 内置强大的智能生成器，使用简单语法即可生成逼真
 }
 ```
 
+### 有状态接口联动
+
+动态 Mock 函数还会接收第二个参数 `ctx`。你可以通过 `ctx.state` 在不同接口之间共享数据，从而模拟真实的增删改查流程。
+
+**新增用户：**
+
+```javascript
+(req, ctx) => {
+  const user = {
+    id: Date.now(),
+    ...req.body
+  };
+
+  ctx.state.update('users', (users = []) => [user, ...users]);
+
+  return {
+    code: 0,
+    message: 'created',
+    data: user
+  };
+}
+```
+
+**获取用户列表：**
+
+```javascript
+(req, ctx) => {
+  const users = ctx.state.get('users') || [];
+
+  return {
+    code: 0,
+    data: users,
+    total: users.length
+  };
+}
+```
+
+配置这两条规则后，`POST /api/users` 会写入共享 Mock State，后续 `GET /api/users` 会返回更新后的用户列表。
+
+控制台提供 **State** 标签页，可查看、编辑、导入、复制、清空并持久化共享状态。
+
 ### 导入与导出
 
 无缝集成现有的 API 工作流。
@@ -289,11 +330,21 @@ PocketMock 内置强大的智能生成器，使用简单语法即可生成逼真
   - **添加到 Mock 规则**: 即时将真实请求转换为 Mock 规则。
 - **筛选**: 支持按 URL、方法、Mock 状态筛选。
 
+### Mock State 面板
+
+**State** 面板用于管理接口联动所需的共享状态：
+
+- **查看/编辑 JSON**: 可以直接维护 `{ "users": [] }` 这类初始数据。
+- **Persist 开关**: 控制状态是否在刷新页面后保留。
+- **导入/复制/清空**: 方便快速准备或重置测试场景。
+- **服务器模式同步**: 使用 Vite 插件时，状态会保存到 `pocket-mock-state.json`。
+
 ---
 
 ## 技术原理
 
 - **猴子补丁**: 通过重写 `window.fetch` 和扩展 `XMLHttpRequest` 原型链来拦截请求
+- **Mock State**: 为动态 Mock 函数提供跨接口共享的 JSON 状态容器
 - **Shadow DOM**: 使用 Shadow Root 封装调试 UI，实现样式完全沙箱化
 - **Vite 库模式**: 使用 Vite 的库模式和 `css: 'injected'` 策略，将 CSS 内联到 JS 中，实现**单文件导入**体验
 

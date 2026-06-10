@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import { saveUIState, loadUIState } from '@/core/utils/local';
 
-export type ActiveTab = 'rules' | 'network';
+export type ActiveTab = 'rules' | 'network' | 'state';
 export type RuleTab = 'body' | 'headers';
 export type NetworkDetailTab = 'headers' | 'payload' | 'response';
 
